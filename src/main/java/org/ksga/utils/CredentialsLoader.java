@@ -1,7 +1,7 @@
 package org.ksga.utils;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class CredentialsLoader {
@@ -10,11 +10,17 @@ public class CredentialsLoader {
 
     public static Properties loadProperties() {
         Properties properties = new Properties();
-        try (FileReader reader = new FileReader(FILE_NAME)) {
-            properties.load(reader);
+
+        // Use ClassLoader to find the file in the classpath
+        try (InputStream input = CredentialsLoader.class.getClassLoader().getResourceAsStream(FILE_NAME)) {
+            if (input == null) {
+                throw new RuntimeException("Unable to find " + FILE_NAME + " in the classpath.");
+            }
+            properties.load(input);
         } catch (IOException e) {
             throw new RuntimeException("Unable to load properties file", e);
         }
+
         return properties;
     }
 }

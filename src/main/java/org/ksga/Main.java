@@ -3,14 +3,27 @@ package org.ksga;
 import org.ksga.controller.ProductController;
 import org.ksga.model.service.ProductService;
 import org.ksga.model.service.ProductServiceImpl;
+import org.ksga.utils.DatabaseUtils;
 import org.ksga.view.View;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.ksga.view.BoxBorder.*;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
+
+        System.out.println("Testing database connection");
+        try (Connection conn = DatabaseUtils.getConnection()) {
+            if (conn != null) {
+                System.out.println("Connection successful!");
+            }
+        } catch (Exception e) {
+            System.err.println("Connection failed!");
+            e.printStackTrace();
+            return;
+        }
 
         ProductService productService = new ProductServiceImpl();
         ProductController productController = new ProductController(productService);
@@ -35,6 +48,6 @@ public class Main {
         System.out.println(SPACE.repeat(10) + BOTTOM_LEFT_CONNECTOR_CORNER + HORIZONTAL_CONNECTOR_BORDER.repeat(120) + BOTTOM_RIGHT_CONNECTOR_CORNER);
         System.out.print(reset);
 
-        view.menu();
+        view.displayAllProducts();
     }
 }

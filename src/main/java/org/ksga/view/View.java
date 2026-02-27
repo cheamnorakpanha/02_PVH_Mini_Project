@@ -29,7 +29,7 @@ public class View {
 
     private static List<Product> products = new ArrayList<>();
 
-    public void menu(){
+    public void displayAllProducts(){
 
         do {
             Table table = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
@@ -113,7 +113,7 @@ public class View {
 
                     break;
                 case "r":
-                    productController.displayAllProducts();
+
                     break;
                 case "u":
                     break;

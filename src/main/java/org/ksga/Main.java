@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 import static org.ksga.view.BoxBorder.*;
 
-public class Main {
+public class  Main {
     public static void main(String[] args) throws SQLException {
 
         System.out.println("Testing database connection");

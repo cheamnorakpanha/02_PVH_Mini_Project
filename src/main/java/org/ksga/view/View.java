@@ -1,6 +1,7 @@
 package org.ksga.view;
 
 import org.ksga.controller.ProductController;
+import org.ksga.exceptions.ProductHelper;
 import org.ksga.model.entity.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -69,7 +71,8 @@ public class View {
             table2.addCell(cyan + "  (P) Previous Page");
             table2.addCell(cyan + "  (L) Last Page");
             table2.addCell(cyan + "  (G) GOTO" + reset);
-            ////////////////////////////////////////////////////////////////
+
+
             table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
             table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
             table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
@@ -110,7 +113,7 @@ public class View {
                     break;
 
                 case "w":
-
+                        writeProduct();
                     break;
                 case "r":
 
@@ -127,10 +130,10 @@ public class View {
 
                     break;
                 case "sa":
-
+                        saveProduct();
                     break;
                 case "un":
-
+                        unsavedProduct();
                     break;
                 case "ba":
 
@@ -177,5 +180,66 @@ public class View {
     }
     public static void DeleteProductByID(){
 
+    }
+
+    public void writeProduct() {
+        try {
+            Integer id = products.size() + 1;
+            System.out.println("ID: " + id);
+
+            System.out.print("Enter the product name: ");
+            String name = scanner.nextLine().trim();
+            ProductHelper.validateProductName(name);
+
+            System.out.print("Enter the unit price: ");
+            Double unitPrice = Double.parseDouble(scanner.nextLine().trim());
+            ProductHelper.validateUnitPrice(unitPrice);
+
+            System.out.print("Enter the quantity: ");
+            Integer quantity = Integer.parseInt(scanner.nextLine().trim());
+            ProductHelper.validateQuantity(quantity);
+
+            Product product = new Product(id, name, unitPrice, quantity, LocalDate.now());
+
+            productController.insertProduct(product);
+
+            System.out.println(green + "Product staged successfully! Press Enter to continue..." + reset);
+            scanner.nextLine();
+
+        } catch (NumberFormatException e) {
+            System.out.println(red + "Invalid input! Please enter a valid number." + reset);
+        } catch (Exception e) {
+            System.out.println(red + "Validation Error: " + e.getMessage() + reset);
+        }
+    }
+
+    public void unsavedProduct() {
+        System.out.println("\n'ui' for viewing insert products and 'uu' for viewing update products or 'b' for back to menu");
+        System.out.print("Enter the option: ");
+        String opt = scanner.nextLine().trim().toLowerCase();
+
+        if (opt.equals("ui") || opt.equals("uu")) {
+            System.out.println(green + "Displaying unsaved products:" + reset);
+            productController.unSaveProduct(null, opt);
+        } else if (opt.equals("b")) {
+            return;
+        } else {
+            System.out.println(red + "Invalid option! Please enter 'ui', 'uu' or 'b'." + reset);
+        }
+    }
+
+    public void saveProduct() {
+        System.out.println("\n'si' for saving insert products and 'su' for saving update products or 'b' for back to menu");
+        System.out.print("Enter option : ");
+        String opt = scanner.nextLine().trim().toLowerCase();
+
+        if (opt.equals("si") || opt.equals("su")) {
+            System.out.println(green + "Saving products to database..." + reset);
+            productController.saveProduct(opt);
+        } else if (opt.equals("b")) {
+            return;
+        } else {
+            System.out.println(red + "Invalid option! Please enter 'si' or 'su'." + reset);
+        }
     }
 }

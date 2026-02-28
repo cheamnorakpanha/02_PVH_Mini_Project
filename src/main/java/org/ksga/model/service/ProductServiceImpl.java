@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void writeProducts(Product product) {
-
+        // write product
     }
 
 

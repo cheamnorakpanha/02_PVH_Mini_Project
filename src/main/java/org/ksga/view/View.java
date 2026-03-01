@@ -117,6 +117,7 @@ public class View {
 
                     break;
                 case "u":
+                    updateProduct();
                     break;
                 case "d":
 
@@ -150,10 +151,6 @@ public class View {
     }
 
     public static void setRow() {
-
-    }
-
-    public static void updateProduct() {
 
     }
 
@@ -272,6 +269,121 @@ public class View {
         }
         table.addCell(magenta + "Page : "+currentPage+" of "+totalPage + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER),2);
         table.addCell(magenta + "Total Record : "+totalRecords+ reset, new CellStyle(CellStyle.HorizontalAlign.CENTER),3);
+        System.out.println(table.render());
+    }
+
+    public void updateProduct() {
+        try {
+            System.out.print("Enter the product ID to update: ");
+            int id = Integer.parseInt(scanner.nextLine().trim());
+
+            List<Product> all = productController.displayAllProducts();
+            Product existingProduct = null;
+            for (Product p : all) {
+                if (p.getId() == id) {
+                    existingProduct = p;
+                    break;
+                }
+            }
+
+            if (existingProduct == null) {
+                System.out.println(red + "Product with ID " + id + " not found!" + reset);
+                return;
+            }
+
+            System.out.println(green + "Existing Product Details:" + reset);
+            displayProductTable(existingProduct);
+
+            String name = existingProduct.getName();
+            double unitPrice = existingProduct.getUnitPrice();
+            int quantity = existingProduct.getQuantity();
+
+            boolean editing = true;
+            while (editing) {
+                System.out.println(cyan + "1. Name   2. Unit Price   3. Qty   4. All Field   5. Exit" + reset);
+                System.out.print("Choose an option to update : ");
+                String option = scanner.nextLine().trim();
+
+                switch (option) {
+                    case "1":
+                        System.out.print("Input Product Name : ");
+                        String newName = scanner.nextLine().trim();
+                        ProductHelper.validateProductName(newName);
+                        name = newName;
+                        break;
+                    case "2":
+                        System.out.print("Input Unit Price : ");
+                        double newPrice = Double.parseDouble(scanner.nextLine().trim());
+                        ProductHelper.validateUnitPrice(newPrice);
+                        unitPrice = newPrice;
+                        break;
+                    case "3":
+                        System.out.print("Input Quantity : ");
+                        int newQty = Integer.parseInt(scanner.nextLine().trim());
+                        ProductHelper.validateQuantity(newQty);
+                        quantity = newQty;
+                        break;
+                    case "4":
+                        System.out.print("Input Product Name : ");
+                        String allName = scanner.nextLine().trim();
+                        ProductHelper.validateProductName(allName);
+                        name = allName;
+
+                        System.out.print("Input Unit Price : ");
+                        double allPrice = Double.parseDouble(scanner.nextLine().trim());
+                        ProductHelper.validateUnitPrice(allPrice);
+                        unitPrice = allPrice;
+
+                        System.out.print("Input Quantity : ");
+                        int allQty = Integer.parseInt(scanner.nextLine().trim());
+                        ProductHelper.validateQuantity(allQty);
+                        quantity = allQty;
+                        break;
+                    case "5":
+                        editing = false;
+                        break;
+                    default:
+                        System.out.println(red + "Invalid option! Please choose 1-5." + reset);
+                        break;
+                }
+            }
+
+            Product updatedProduct = new Product(
+                    existingProduct.getId(),
+                    name,
+                    unitPrice,
+                    quantity,
+                    existingProduct.getImportedDate()
+            );
+
+            productController.updateProduct(updatedProduct);
+
+            System.out.println(green + "Product staged for update! Use Sa -> su to save to database." + reset);
+            displayProductTable(updatedProduct);
+
+        } catch (NumberFormatException e) {
+            System.out.println(red + "Invalid input! Please enter valid numbers." + reset);
+        } catch (Exception e) {
+            System.out.println(red + "Error: " + e.getMessage() + reset);
+        }
+    }
+
+    private void displayProductTable(Product product) {
+        Table table = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
+        table.addCell(magenta + "ID" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(magenta + "NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(magenta + "UNIT PRICE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(magenta + "QUANTITY" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(magenta + "IMPORTED_DATE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        for (int i = 0; i < 5; i++) {
+            table.setColumnWidth(i, 25, 25);
+        }
+        table.addCell(blue + String.valueOf(product.getId()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(product.getName() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(cyan + String.valueOf(product.getUnitPrice()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(green + String.valueOf(product.getQuantity()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(magenta + String.valueOf(product.getImportedDate()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+
         System.out.println(table.render());
     }
 }

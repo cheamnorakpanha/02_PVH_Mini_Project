@@ -128,7 +128,7 @@ public class View {
                     updateProduct();
                     break;
                 case "d":
-
+                    deleteProduct();
                     break;
                 case "s":
 
@@ -437,5 +437,45 @@ public class View {
         table.addCell(green + String.valueOf(product.getQuantity()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
         table.addCell(magenta + String.valueOf(product.getImportedDate()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
         System.out.println(table.render());
+    }
+
+    public void deleteProduct() {
+        try {
+            System.out.print(yellow + "Please input id to delete record : " + reset);
+            int id = Integer.parseInt(scanner.nextLine().trim());
+
+            List<Product> all = productController.displayAllProducts();
+            Product target = null;
+            for (Product p : all) {
+                if (p.getId() == id) { target = p; break; }
+            }
+
+            if (target == null) {
+                System.out.println(red + "Product with ID " + id + " not found!" + reset);
+                System.out.print(yellow + "Enter to continue..." + reset);
+                scanner.nextLine();
+                return;
+            }
+
+            displayProductTable(target);
+
+            System.out.print(yellow + "Are you sure to delete product id : " + red + id + yellow + " ? (y/n) : " + reset);
+            String confirm = scanner.nextLine().trim().toLowerCase();
+
+            if (confirm.equals("y")) {
+                String result = productController.deleteProduct(id);
+                System.out.println(green + result + reset);
+            } else {
+                System.out.println(yellow + "Delete cancelled." + reset);
+            }
+
+            System.out.print(yellow + "Enter to continue..." + reset);
+            scanner.nextLine();
+
+        } catch (NumberFormatException e) {
+            System.out.println(red + "Invalid input! Please enter a valid number." + reset);
+        } catch (Exception e) {
+            System.out.println(red + "Error: " + e.getMessage() + reset);
+        }
     }
 }

@@ -9,6 +9,11 @@ target/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/shelf/
 *.iws
 *.iml
 *.ipr
@@ -39,4 +44,4 @@ build/
 .DS_Store
 
 # Ignore application.properties
-src/main/resources/application.properties
+/src/main/resources/application.properties

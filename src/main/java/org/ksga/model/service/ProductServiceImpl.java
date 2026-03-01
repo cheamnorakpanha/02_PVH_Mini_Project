@@ -80,7 +80,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void updateProduct(Product product) {
-
+        for (int i = 0; i < updateProduct.size(); i++) {
+            if (updateProduct.get(i).getId().equals(product.getId())) {
+                updateProduct.set(i, product);
+                return;
+            }
+        }
+        updateProduct.add(product);
     }
 
     @Override

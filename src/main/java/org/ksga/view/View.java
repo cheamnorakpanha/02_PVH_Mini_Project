@@ -182,7 +182,7 @@ public class View {
 
     public void writeProduct() {
         try {
-            Integer id = products.size() + 1;
+            Integer id = productController.displayAllProducts().size() + 1;
             System.out.println("ID: " + id);
 
             System.out.print("Enter the product name: ");
@@ -201,7 +201,8 @@ public class View {
 
             productController.insertProduct(product);
 
-            System.out.println(green + "Product staged successfully! Press Enter to continue..." + reset);
+            System.out.println(green + "Product create successfully! Press Enter to continue..." + reset);
+            displayAllProducts();
             scanner.nextLine();
 
         } catch (NumberFormatException e) {
@@ -212,7 +213,11 @@ public class View {
     }
 
     public void unsavedProduct() {
-        System.out.println("\n'ui' for viewing insert products and 'uu' for viewing update products or 'b' for back to menu");
+        System.out.println("\n" +
+                green + "ui" + reset + " for viewing insert products and " +
+                green + "uu" + reset + " for viewing update products or " +
+                        red + "b" + reset + " for back to menu"
+        );
         System.out.print("Enter the option: ");
         String opt = scanner.nextLine().trim().toLowerCase();
 
@@ -227,13 +232,19 @@ public class View {
     }
 
     public void saveProduct() {
-        System.out.println("\n'si' for saving insert products and 'su' for saving update products or 'b' for back to menu");
+        System.out.println(
+                "\n" +
+                        green + "si" + reset + " for saving insert products and " +
+                        green + "su" + reset + " for saving update products or " +
+                        green + "b" + reset + " for back to menu"
+        );
         System.out.print("Enter option : ");
         String opt = scanner.nextLine().trim().toLowerCase();
 
         if (opt.equals("si") || opt.equals("su")) {
-            System.out.println(green + "Saving products to database..." + reset);
+            System.out.println(green + "Saving products to successfully" + reset);
             productController.saveProduct(opt);
+            displayAllProducts();
         } else if (opt.equals("b")) {
             return;
         } else {
@@ -254,6 +265,7 @@ public class View {
         int end = Math.min(start + rowPerPage,totalRecords);
 
         Table table = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
+        table.addCell(magenta +"ALL PRODUCTS INFO" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 5);
         table.addCell(red + "ID" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
         table.addCell( red+"NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
         table.addCell(red + "UNIT PRICE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));

@@ -56,7 +56,26 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product readProductById(Integer id) {
-        return null;
+        Product product = null;
+        String sql = "SELECT * FROM products WHERE id = ?";
+        try(Connection connection = DatabaseUtils.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                product = new Product(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getDouble("unit_price"),
+                        resultSet.getInt("quantity"),
+                        resultSet.getDate("imported_date").toLocalDate()
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
     }
 
     @Override

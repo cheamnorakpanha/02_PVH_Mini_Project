@@ -30,9 +30,11 @@ public class View {
     }
 
     private static List<Product> products = new ArrayList<>();
-
+    private int currentPage = 1;
+    private int rowPerPage = 10;
+    private List<Product> cachedProducts = new ArrayList<>();
     public void displayAllProducts(){
-
+        displayPage(currentPage);
         do {
 
             Table table2 = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER, ShownBorders.SURROUND);
@@ -86,18 +88,26 @@ public class View {
 
             switch (option) {
                 case "n":
-
+                    displayPage(currentPage+1);
                     break;
                 case "p":
-
+                    displayPage(currentPage-1);
                     break;
                 case "f":
-
+                    displayPage(1);
                     break;
                 case "l":
+                    int totalPages = (int) Math.ceil((double) cachedProducts.size() / rowPerPage);
+                    displayPage(totalPages);
                     break;
                 case "g":
-
+                    System.out.print("page number :");
+                    try {
+                        int page = Integer.parseInt(scanner.nextLine().trim());
+                        displayPage(page);
+                    } catch (NumberFormatException e) {
+                        System.out.println(red + "Invalid page number!" + reset);
+                    }
                     break;
 
                 case "w":
@@ -229,5 +239,39 @@ public class View {
         } else {
             System.out.println(red + "Invalid option! Please enter 'si' or 'su'." + reset);
         }
+    }
+    private void displayPage(int page){
+        cachedProducts = productController.displayAllProducts();
+        int totalRecords = cachedProducts.size();
+        int totalPage = (int) Math.ceil((double) totalRecords / rowPerPage);
+
+        if(page < 1) page = 1;
+        if(page > totalPage) page = totalPage;
+
+        currentPage = page;
+
+        int start = (currentPage - 1)*rowPerPage;
+        int end = Math.min(start + rowPerPage,totalRecords);
+
+        Table table = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
+        table.addCell(red + "ID" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell( red+"NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(red + "UNIT PRICE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(red + "QUANTITY" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(red + "IMPORTED_DATE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        for (int i = 0; i < 5; i++) {
+            table.setColumnWidth(i, 25, 25);
+        }
+        for (int i =start;i<end;i++){
+            Product p = cachedProducts.get(i);
+            table.addCell(blue + String.valueOf(p.getId()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            table.addCell(  p.getName() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            table.addCell(cyan + String.valueOf(p.getUnitPrice()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            table.addCell(green + String.valueOf(p.getQuantity()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            table.addCell(magenta + String.valueOf(p.getImportedDate()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        }
+        table.addCell(magenta + "Page : "+currentPage+" of "+totalPage + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER),2);
+        table.addCell(magenta + "Total Record : "+totalRecords+ reset, new CellStyle(CellStyle.HorizontalAlign.CENTER),3);
+        System.out.println(table.render());
     }
 }

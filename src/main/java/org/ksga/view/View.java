@@ -34,7 +34,7 @@ public class View {
     public void displayAllProducts(){
 
         do {
-            productController.displayAllProducts();
+
             Table table2 = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER, ShownBorders.SURROUND);
             CellStyle cellStyle = new CellStyle(CellStyle.HorizontalAlign.CENTER);
             table2.setColumnWidth(0, 20, 25);

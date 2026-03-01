@@ -41,25 +41,6 @@ public class ProductServiceImpl implements ProductService {
                 );
                 products.add(product);
             }
-
-            Table table = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
-            table.addCell(red + "ID" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            table.addCell( red+"NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            table.addCell(red + "UNIT PRICE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            table.addCell(red + "QUANTITY" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            table.addCell(red + "IMPORTED_DATE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-
-            for (int i = 0; i < 5; i++) {
-                table.setColumnWidth(i, 25, 25);
-            }
-            for (Product product_list : products) {
-                table.addCell(blue + product_list.getId() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-                table.addCell(  product_list.getName() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-                table.addCell(cyan + product_list.getUnitPrice() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-                table.addCell(green + product_list.getQuantity() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-                table.addCell(magenta + product_list.getImportedDate() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            }
-            System.out.println(table.render());
         }catch (SQLException e) {
             e.printStackTrace();
         }

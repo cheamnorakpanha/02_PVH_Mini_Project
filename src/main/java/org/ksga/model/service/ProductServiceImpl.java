@@ -112,24 +112,24 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> searchProductsByName(String name) {
-
         List<Product> products = new ArrayList<>();
-        String displayProducts = "SELECT id, name, unit_price, quantity, imported_date FROM products";
+        String sql = "SELECT id, name, unit_price, quantity, imported_date FROM products WHERE name ILIKE ?";
         try (Connection connection = DatabaseUtils.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(displayProducts)) {
-
-            while (resultSet.next()) {
-                Product product = new Product(
-                        resultSet.getInt("id"),
-                        resultSet.getString("name"),
-                        resultSet.getDouble("unit_price"),
-                        resultSet.getInt("quantity"),
-                        resultSet.getDate("imported_date").toLocalDate()
-                );
-                products.add(product);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, "%" + name + "%");
+            try (ResultSet resultSet = ps.executeQuery()) {
+                while (resultSet.next()) {
+                    Product product = new Product(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getDouble("unit_price"),
+                            resultSet.getInt("quantity"),
+                            resultSet.getDate("imported_date").toLocalDate()
+                    );
+                    products.add(product);
+                }
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return products;
@@ -241,7 +241,7 @@ public class ProductServiceImpl implements ProductService {
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-             return false;
+            return false;
         }
     }
     @Override
@@ -289,7 +289,7 @@ public class ProductServiceImpl implements ProductService {
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-             return false;
+            return false;
         }
     }
     @Override

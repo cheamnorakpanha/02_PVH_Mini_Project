@@ -149,10 +149,10 @@ public class View {
                     unsavedProduct();
                     break;
                 case "ba":
-
+                        handleBackup();
                     break;
                 case "re":
-
+                        handleRestore();
                     break;
                 case "e":
 
@@ -206,16 +206,93 @@ public class View {
 
     }
 
-    public static void BackupDate(String backupDirectory) {
+    public void handleBackup(){
+        String backupDirectory = "C:\\Users\\MSI\\Desktop\\02_PVH_Mini_Project\\src\\main\\java\\org\\ksga\\backup";
+
+        BackupDate(backupDirectory);
+    }
+    public void BackupDate(String backupDirectory) {
+        boolean success = productController.backupProduct(backupDirectory);
+
+        if (success) {
+            System.out.println(green + "Backup completed successfully." + reset);
+        } else {
+            System.out.println(red + "Backup failed. Please check the console for errors." + reset);
+        }
 
     }
 
     public List<String> listBackupFiles(String backupDirectory) {
-        return null;
+        List<String> sqlFiles = new ArrayList<>();
+        File folder = new File(backupDirectory);
+
+        if (folder.exists() && folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile() && file.getName().endsWith(".sql")) {
+                        sqlFiles.add(file.getName());
+                    }
+                }
+            }
+        }
+        return sqlFiles;
     }
 
-    public static void RestoreDate() {
+    public void handleRestore(){
+        String backupDirectory = "C:\\Users\\MSI\\Desktop\\02_PVH_Mini_Project\\src\\main\\java\\org\\ksga\\backup";
+        RestoreDate(backupDirectory);
+    }
+    public void RestoreDate(String backupDirectory) {
+        List<String> files = listBackupFiles(backupDirectory);
 
+        if (files == null || files.isEmpty()) {
+            System.out.println(red + "No backup files found in: " + backupDirectory + reset);
+            return;
+        }
+
+        Table table = new Table(2, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
+        table.addCell("No.", new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell("Backup File Name", new CellStyle(CellStyle.HorizontalAlign.CENTER));
+
+        for (int i = 0; i < files.size(); i++) {
+            table.addCell(yellow + String.valueOf(i + 1) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            table.addCell(pink + files.get(i) + reset, new CellStyle(CellStyle.HorizontalAlign.LEFT));
+        }
+
+        System.out.println("\nAvailable backup files:");
+        System.out.println(table.render());
+
+        System.out.print(cyan + "Select a backup file to restore (enter number, or 0 to cancel): " + reset);
+
+        try {
+            int choice = Integer.parseInt(scanner.nextLine().trim());
+
+            if (choice == 0) {
+                System.out.println(yellow + "Restore canceled." + reset);
+                return;
+            }
+
+            if (choice > 0 && choice <= files.size()) {
+                String selectedFile = files.get(choice - 1);
+                String fullPath = backupDirectory + File.separator + selectedFile;
+
+                System.out.println(yellow + "Restoring database from: " + selectedFile + "..." + reset);
+
+                boolean success = productController.restoreProduct(fullPath);
+
+                if (success) {
+                    System.out.println(green + "Database restored successfully!" + reset);
+                    displayAllProducts();
+                } else {
+                    System.out.println(red + "Database restore failed!" + reset);
+                }
+            } else {
+                System.out.println(red + "Invalid choice! Returning to menu." + reset);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println(red + "Invalid input! Please enter a valid number." + reset);
+        }
     }
 
     public static void SearchProductByName() throws SQLException {
@@ -301,6 +378,9 @@ public class View {
         int totalRecords = cachedProducts.size();
         int totalPage = (int) Math.ceil((double) totalRecords / rowPerPage);
 
+        if (totalPage == 0) {
+            totalPage = 1;
+        }
         if(page < 1) page = 1;
         if(page > totalPage) page = totalPage;
 

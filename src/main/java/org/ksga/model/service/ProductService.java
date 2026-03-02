@@ -40,8 +40,14 @@ public interface ProductService {
     // Backup
     boolean backupProducts(String backupDirectory);
 
+    // generate backup file
+    String generateBackupFile(String backupDirectory);
+
     // Restore
-    boolean restoreProducts();
+    boolean restoreProducts(String backupFilePath);
+
+    // delete all table in database
+    void deleteProductTableForRestore();
 
     // display product
     void displayProduct(String displayProduct);

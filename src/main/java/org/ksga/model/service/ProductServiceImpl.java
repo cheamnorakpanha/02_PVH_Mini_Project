@@ -7,7 +7,10 @@ import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -192,12 +195,107 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean backupProducts(String backupDirectory) {
-        return false;
+        String username = "postgres";
+        String password = "Admin";
+        String database = "stock_management";
+        String pgDumpPath = "C:\\Program Files\\PostgreSQL\\18\\bin\\pg_dump.exe";
+
+        String filePath = generateBackupFile(backupDirectory);
+
+        ProcessBuilder pb = new ProcessBuilder(
+                pgDumpPath,
+                "--username=" + username,
+                "--dbname=" + database,
+                "--file=" + filePath
+        );
+
+        pb.environment().put("PGPASSWORD", password);
+        try {
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println(green + "Backup successful! Backup file created at: " + filePath + reset);
+                return true;
+            } else {
+                System.out.println(red + "Backup failed with exit code: " + exitCode + reset);
+                return false;
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+             return false;
+        }
+    }
+    @Override
+    public String generateBackupFile(String backupDirectory) {
+        // create folder if not exist
+        File folder = new File(backupDirectory);
+        if(!folder.exists()){
+            folder.mkdirs();
+        }
+        LocalDate currentDate = LocalDate.now();
+        int version = 1;
+        File backupFile;
+        while(true){
+            String fileName = "Version" + version + "-product-backup-" + currentDate + ".sql";
+            backupFile = new File(folder, fileName);
+
+            if(!backupFile.exists()){
+                break;
+            }
+            version++;
+        }
+        return backupFile.getAbsolutePath();
     }
 
     @Override
-    public boolean restoreProducts() {
-        return false;
+    public boolean restoreProducts(String backupFilePath) {
+        deleteProductTableForRestore();
+        String psqlPath = "C:\\Program Files\\PostgreSQL\\18\\bin\\psql.exe";
+
+        ProcessBuilder pb = new ProcessBuilder(
+                psqlPath,
+                "--username=postgres",
+                "--dbname=stock_management",
+                "--file=" + backupFilePath
+        );
+        pb.environment().put("PGPASSWORD", "Admin");
+        try{
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println(green + "Restore successful from file: " + backupFilePath + reset);
+                return true;
+            } else {
+                System.out.println(red + "Restore failed with exit code: " + exitCode + reset);
+                return false;
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+             return false;
+        }
+    }
+    @Override
+    public void deleteProductTableForRestore(){
+        String url = "jdbc:postgresql://localhost:5432/stock_management";
+        String user = "postgres";
+        String password = "Admin";
+
+        String[] dropCommands = {
+                "DROP TABLE IF EXISTS public.products CASCADE;",
+                "DROP TABLE IF EXISTS public.setting CASCADE;",
+                "DROP SEQUENCE IF EXISTS public.products_id_seq;",
+                "DROP SEQUENCE IF EXISTS public.setting_id_seq;"
+
+        };
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+             Statement statement = connection.createStatement()) {
+            for (String command : dropCommands) {
+                statement.executeUpdate(command);
+            }
+            System.out.println(green + "Old tables dropped successfully for restore." + reset);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

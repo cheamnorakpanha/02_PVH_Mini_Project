@@ -64,7 +64,7 @@ public class ProductController {
     }
     // Restore
     public boolean restoreProduct(String backupFilePath) {
-        return productService.restoreProducts();
+        return productService.restoreProducts(backupFilePath);
     }
     // display product
     public void displayProduct(String displayProduct) {

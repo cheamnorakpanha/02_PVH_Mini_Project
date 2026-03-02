@@ -114,12 +114,29 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void setDisplayRow(int rows) {
-
+        String sql = "UPDATE setting SET display_row = ? WHERE id = 1";
+        try (Connection connection = DatabaseUtils.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, rows);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public int displayRow() {
-        return 0;
+        String sql = "SELECT display_row FROM setting WHERE id = 1";
+        try (Connection connection = DatabaseUtils.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("display_row");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 10;
     }
 
     @Override

@@ -25,14 +25,20 @@ import static org.ksga.view.BoxBorder.*;
 public class View {
     private final ProductController productController;
     static Scanner scanner = new Scanner(System.in);
-    public View(ProductController productController){
-        this.productController = productController;
-    }
 
     private static List<Product> products = new ArrayList<>();
     private int currentPage = 1;
     private int rowPerPage = 10;
     private List<Product> cachedProducts = new ArrayList<>();
+
+    public View(ProductController productController){
+        this.productController = productController;
+        int savedRow = productController.displayRow();
+        if (savedRow > 0) {
+            this.rowPerPage = savedRow;
+        }
+    }
+
     public void displayAllProducts(){
         displayPage(currentPage);
         do {
@@ -134,7 +140,7 @@ public class View {
 
                     break;
                 case "se":
-
+                    setRow();
                     break;
                 case "sa":
                     saveProduct();
@@ -158,10 +164,44 @@ public class View {
         } while (true);
     }
 
-    public static void setRow() {
+    public void setRow() {
+        System.out.println(cyan + "Current rows per page: " + yellow + rowPerPage + reset);
+        System.out.println(cyan + "1. Set new row count");
+        System.out.println("2. Reset to default (10)");
+        System.out.println("3. Back to menu" + reset);
+        System.out.print(blue + "Choose an option: " + reset);
+        String option = scanner.nextLine().trim();
 
+        switch (option) {
+            case "1":
+                System.out.print("Enter number of rows per page: ");
+                try {
+                    int newRows = Integer.parseInt(scanner.nextLine().trim());
+                    if (newRows < 1) {
+                        System.out.println(red + "Row count must be at least 1!" + reset);
+                        break;
+                    }
+                    rowPerPage = newRows;
+                    productController.setRow(rowPerPage);
+                    System.out.println(green + "Rows per page set to " + rowPerPage + " and saved!" + reset);
+                    displayPage(currentPage);
+                } catch (NumberFormatException e) {
+                    System.out.println(red + "Invalid input! Please enter a valid number." + reset);
+                }
+                break;
+            case "2":
+                rowPerPage = 10;
+                productController.setRow(rowPerPage);
+                System.out.println(green + "Rows per page reset to default (10) and saved!" + reset);
+                displayPage(currentPage);
+                break;
+            case "3":
+                break;
+            default:
+                System.out.println(red + "Invalid option! Please choose 1-3." + reset);
+                break;
+        }
     }
-
     public static void searchById() {
 
     }

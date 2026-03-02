@@ -112,7 +112,27 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> searchProductsByName(String name) {
-        return List.of();
+
+        List<Product> products = new ArrayList<>();
+        String displayProducts = "SELECT id, name, unit_price, quantity, imported_date FROM products";
+        try (Connection connection = DatabaseUtils.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(displayProducts)) {
+
+            while (resultSet.next()) {
+                Product product = new Product(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getDouble("unit_price"),
+                        resultSet.getInt("quantity"),
+                        resultSet.getDate("imported_date").toLocalDate()
+                );
+                products.add(product);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
     }
 
     @Override

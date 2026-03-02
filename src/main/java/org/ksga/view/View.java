@@ -130,7 +130,44 @@ public class View {
                     deleteProduct();
                     break;
                 case "s":
+                    System.out.print("Input Product Name For Search: ");
+                    String inputName = scanner.nextLine();
 
+                    if (inputName.trim().isEmpty()) {
+                        System.out.println(red + "Search term cannot be empty " + reset);
+                        break;
+                    }
+                    List<Product> searchResults = productController.getProductByName(inputName);
+                    if (searchResults.isEmpty()) {
+                        System.out.println(red + "No products found matching: " + inputName + reset);
+                    } else {
+//                        cachedProducts = searchResults;
+//                        todo separate table from this case
+                        Table searchTable = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
+                        searchTable.addCell(magenta + "SEARCH BY NAME " + reset,
+                                new CellStyle(CellStyle.HorizontalAlign.CENTER), 5);
+                        searchTable.addCell(red + "ID" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                        searchTable.addCell(red + "NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                        searchTable.addCell(red + "UNIT PRICE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                        searchTable.addCell(red + "QUANTITY" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                        searchTable.addCell(red + "IMPORTED DATE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                        for (int i = 0; i < 5; i++) {
+                            searchTable.setColumnWidth(i, 25, 25);
+                        }
+                        for (Product product : searchResults) {
+                            searchTable.addCell(blue + String.valueOf(product.getId()) + reset,
+                                    new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                            searchTable.addCell(product.getName() + reset,
+                                    new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                            searchTable.addCell(cyan +  String.format("%.2f", product.getUnitPrice()) + reset,
+                                    new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                            searchTable.addCell(green + String.valueOf(product.getQuantity()) + reset,
+                                    new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                            searchTable.addCell(magenta + String.valueOf(product.getImportedDate()) + reset,
+                                    new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                        }
+                        System.out.println(searchTable.render());
+                    }
                     break;
                 case "se":
                     setRow();

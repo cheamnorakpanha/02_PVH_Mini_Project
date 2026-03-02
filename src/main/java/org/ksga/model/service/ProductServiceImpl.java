@@ -59,17 +59,55 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product readProductById(Integer id) {
-        return null;
+        Product product = null;
+        String sql = "SELECT * FROM products WHERE id = ?";
+        try(Connection connection = DatabaseUtils.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                product = new Product(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getDouble("unit_price"),
+                        resultSet.getInt("quantity"),
+                        resultSet.getDate("imported_date").toLocalDate()
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
     }
 
     @Override
     public void updateProduct(Product product) {
-
+        for (int i = 0; i < updateProduct.size(); i++) {
+            if (updateProduct.get(i).getId().equals(product.getId())) {
+                updateProduct.set(i, product);
+                return;
+            }
+        }
+        updateProduct.add(product);
     }
 
     @Override
     public String deleteProduct(Integer id) {
-        return "";
+        String deleteQuery = "DELETE FROM products WHERE id = ?";
+        try (Connection connection = DatabaseUtils.getConnection();
+             PreparedStatement ps = connection.prepareStatement(deleteQuery)) {
+            ps.setInt(1, id);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                return "Delete Successfully";
+            } else {
+                return "Product not found";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error deleting product: " + e.getMessage();
+        }
     }
 
     @Override
@@ -79,12 +117,29 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void setDisplayRow(int rows) {
-
+        String sql = "UPDATE setting SET display_row = ? WHERE id = 1";
+        try (Connection connection = DatabaseUtils.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, rows);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public int displayRow() {
-        return 0;
+        String sql = "SELECT display_row FROM setting WHERE id = 1";
+        try (Connection connection = DatabaseUtils.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("display_row");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 10;
     }
 
     @Override

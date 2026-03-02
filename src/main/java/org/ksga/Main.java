@@ -14,17 +14,6 @@ import static org.ksga.view.BoxBorder.*;
 public class  Main {
     public static void main(String[] args) throws SQLException {
 
-        System.out.println("Testing database connection");
-        try (Connection conn = DatabaseUtils.getConnection()) {
-            if (conn != null) {
-                System.out.println("Connection successful!");
-            }
-        } catch (Exception e) {
-            System.err.println("Connection failed!");
-            e.printStackTrace();
-            return;
-        }
-
         ProductService productService = new ProductServiceImpl();
         ProductController productController = new ProductController(productService);
         View view = new View(productController);

@@ -29,9 +29,6 @@ public class View {
     private static List<Product> products = new ArrayList<>();
     private int currentPage = 1;
     private int rowPerPage = 10;
-<<<<<<< feature/backup-restore
-=======
-    private List<Product> cachedProducts = new ArrayList<>();
 
     public View(ProductController productController){
         this.productController = productController;
@@ -41,7 +38,6 @@ public class View {
         }
     }
 
->>>>>>> main
     public void displayAllProducts(){
         displayPage(currentPage);
         do {

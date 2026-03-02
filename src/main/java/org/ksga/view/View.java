@@ -9,16 +9,11 @@ import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Stream;
 
 import static org.ksga.view.BoxBorder.*;
 
@@ -113,15 +108,7 @@ public class View {
                     writeProduct();
                     break;
                 case "r":
-                    System.out.print("Enter product ID: ");
-                    try {
-                        int id = Integer.parseInt(scanner.nextLine().trim());
-                        getProductById(id);
-                    } catch (NumberFormatException e) {
-                        System.out.println(red + "Invalid ID! Please enter a number." + reset);
-                        System.out.println(yellow+"Press Enter to continue..."+reset);
-                        scanner.nextLine();
-                    }
+                    searchById();
                     break;
                 case "u":
                     updateProduct();
@@ -195,8 +182,47 @@ public class View {
                 break;
         }
     }
-    public static void searchById() {
+    public  void searchById() {
+        System.out.print("Enter product ID: ");
+        int id;
+        try {
+            id = Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println(red + "Invalid ID! Please enter a number." + reset);
+            System.out.println(yellow+"Press Enter to continue..."+reset);
+            scanner.nextLine();
+            return;
+        }
+        Product product = productController.getProductById(id);
 
+        if (product == null) {
+            System.out.println(red + "No product found with ID: " + id + reset);
+            System.out.println(yellow+"Press Enter to continue..."+reset);
+            scanner.nextLine();
+            return;
+        }
+
+        Table table = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
+
+        table.addCell(magenta + "Product Details (ID=" + id + ")" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 5);
+
+        table.addCell(magenta + "ID" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(magenta + "NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(magenta + "UNIT PRICE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(magenta + "QUANTITY" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(magenta + "IMPORTED_DATE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+
+        for (int i = 0; i < 5; i++) {
+            table.setColumnWidth(i, 25, 25);
+        }
+
+        table.addCell(blue + product.getId() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(product.getName() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(cyan + product.getUnitPrice() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(green + product.getQuantity() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(magenta + product.getImportedDate() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+
+        System.out.println(table.render());
     }
 
     public void handleBackup(){
@@ -399,38 +425,6 @@ public class View {
         System.out.println(table.render());
     }
 
-    private void getProductById(int id) {
-        Product product = productController.getProductById(id);
-
-        if (product == null) {
-            System.out.println(red + "No product found with ID: " + id + reset);
-            System.out.println(yellow+"Press Enter to continue..."+reset);
-            scanner.nextLine();
-            return;
-        }
-
-        Table table = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
-
-        table.addCell(magenta + "Product Details (ID=" + id + ")" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 5);
-
-        table.addCell(magenta + "ID" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        table.addCell(magenta + "NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        table.addCell(magenta + "UNIT PRICE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        table.addCell(magenta + "QUANTITY" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        table.addCell(magenta + "IMPORTED_DATE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-
-        for (int i = 0; i < 5; i++) {
-            table.setColumnWidth(i, 25, 25);
-        }
-
-        table.addCell(blue + product.getId() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        table.addCell(product.getName() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        table.addCell(cyan + product.getUnitPrice() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        table.addCell(green + product.getQuantity() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        table.addCell(magenta + product.getImportedDate() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-
-        System.out.println(table.render());
-    }
 
     public void updateProduct() {
         try {

@@ -32,29 +32,22 @@ public class View {
     private static List<Product> products = new ArrayList<>();
     private int currentPage = 1;
     private int rowPerPage = 10;
-    private List<Product> cachedProducts = new ArrayList<>();
     public void displayAllProducts(){
         displayPage(currentPage);
         do {
 
             Table table2 = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER, ShownBorders.SURROUND);
-            CellStyle cellStyle = new CellStyle(CellStyle.HorizontalAlign.CENTER);
-            table2.setColumnWidth(0, 20, 25);
-            table2.setColumnWidth(1, 20, 25);
-            table2.setColumnWidth(2, 20, 25);
-            table2.setColumnWidth(3, 20, 25);
-            table2.setColumnWidth(4, 20, 25);
 
             table2.addCell(" ");
             table2.addCell(" ", new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            table2.addCell(magenta + "APPLICATION MENU"+ reset, new CellStyle(CellStyle.HorizontalAlign.CENTER)); // Set colspan to 5
+            table2.addCell(magenta + "APPLICATION MENU"+ reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
             table2.addCell(" ", new CellStyle(CellStyle.HorizontalAlign.CENTER));
             table2.addCell(" ");
-            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
-            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
-            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
-            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
-            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
+            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
+            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
+            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
+            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
+            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
 
             table2.addCell(cyan + "  (F) First Page");
             table2.addCell(cyan + "  (N) Next Page");
@@ -63,11 +56,11 @@ public class View {
             table2.addCell(cyan + "  (G) GOTO" + reset);
 
 
-            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
-            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
-            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
-            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
-            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(20));
+            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
+            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
+            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
+            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
+            table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
 
             table2.addCell(cyan + "  (W) Write");
             table2.addCell(cyan + "  (R) Read (id)");
@@ -97,7 +90,7 @@ public class View {
                     displayPage(1);
                     break;
                 case "l":
-                    int totalPages = (int) Math.ceil((double) cachedProducts.size() / rowPerPage);
+                    int totalPages = (int) Math.ceil((double) products.size() / rowPerPage);
                     displayPage(totalPages);
                     break;
                 case "g":
@@ -207,32 +200,26 @@ public class View {
         }
 
         Table table = new Table(2, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
-        table.addCell("No.", new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        table.addCell("Backup File Name", new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.setColumnWidth(0, 5, 5);
+        table.setColumnWidth(1, 50, 50);
+        table.addCell(magenta +"List of Backup Data" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 2);
 
         for (int i = 0; i < files.size(); i++) {
             table.addCell(yellow + String.valueOf(i + 1) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
             table.addCell(pink + files.get(i) + reset, new CellStyle(CellStyle.HorizontalAlign.LEFT));
         }
 
-        System.out.println("\nAvailable backup files:");
         System.out.println(table.render());
 
-        System.out.print(cyan + "Select a backup file to restore (enter number, or 0 to cancel): " + reset);
+        System.out.print(cyan + "Enter backup_id to restore: " + reset);
 
         try {
             int choice = Integer.parseInt(scanner.nextLine().trim());
 
-            if (choice == 0) {
-                System.out.println(yellow + "Restore canceled." + reset);
-                return;
-            }
 
             if (choice > 0 && choice <= files.size()) {
                 String selectedFile = files.get(choice - 1);
                 String fullPath = backupDirectory + File.separator + selectedFile;
-
-                System.out.println(yellow + "Restoring database from: " + selectedFile + "..." + reset);
 
                 boolean success = productController.restoreProduct(fullPath);
 
@@ -329,8 +316,8 @@ public class View {
         }
     }
     private void displayPage(int page){
-        cachedProducts = productController.displayAllProducts();
-        int totalRecords = cachedProducts.size();
+        products = productController.displayAllProducts();
+        int totalRecords = products.size();
         int totalPage = (int) Math.ceil((double) totalRecords / rowPerPage);
 
         if (totalPage == 0) {
@@ -355,7 +342,7 @@ public class View {
             table.setColumnWidth(i, 25, 25);
         }
         for (int i =start;i<end;i++){
-            Product p = cachedProducts.get(i);
+            Product p = products.get(i);
             table.addCell(blue + String.valueOf(p.getId()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
             table.addCell(  p.getName() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
             table.addCell(cyan + String.valueOf(p.getUnitPrice()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));

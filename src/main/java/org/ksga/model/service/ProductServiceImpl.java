@@ -214,7 +214,6 @@ public class ProductServiceImpl implements ProductService {
             Process process = pb.start();
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                System.out.println(green + "Backup successful! Backup file created at: " + filePath + reset);
                 return true;
             } else {
                 System.out.println(red + "Backup failed with exit code: " + exitCode + reset);
@@ -263,7 +262,6 @@ public class ProductServiceImpl implements ProductService {
             Process process = pb.start();
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                System.out.println(green + "Restore successful from file: " + backupFilePath + reset);
                 return true;
             } else {
                 System.out.println(red + "Restore failed with exit code: " + exitCode + reset);
@@ -292,7 +290,6 @@ public class ProductServiceImpl implements ProductService {
             for (String command : dropCommands) {
                 statement.executeUpdate(command);
             }
-            System.out.println(green + "Old tables dropped successfully for restore." + reset);
         } catch (SQLException e) {
             e.printStackTrace();
         }

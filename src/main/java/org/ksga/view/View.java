@@ -183,28 +183,27 @@ public class View {
         }
     }
     public  void searchById() {
-        System.out.print("Enter product ID: ");
         int id;
-        try {
-            id = Integer.parseInt(scanner.nextLine().trim());
-        } catch (NumberFormatException e) {
-            System.out.println(red + "Invalid ID! Please enter a number." + reset);
-            System.out.println(yellow+"Press Enter to continue..."+reset);
-            scanner.nextLine();
-            return;
-        }
-        Product product = productController.getProductById(id);
+        Product product;
+        while (true) {
+            try {
+                System.out.print("Enter product ID: ");
+                id = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println(red + "Invalid ID! Please enter a number." + reset);
+                continue;
+            }
+            product = productController.getProductById(id);
 
-        if (product == null) {
-            System.out.println(red + "No product found with ID: " + id + reset);
-            System.out.println(yellow+"Press Enter to continue..."+reset);
-            scanner.nextLine();
-            return;
+            if (product == null) {
+                System.out.println(red + "No product found with ID: " + id + reset);
+                continue;
+            }
+            break;
         }
-
         Table table = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
 
-        table.addCell(magenta + "Product Details (ID=" + id + ")" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 5);
+        table.addCell(magenta + "PRODUCT DETAILS" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 5);
 
         table.addCell(magenta + "ID" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
         table.addCell(magenta + "NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));

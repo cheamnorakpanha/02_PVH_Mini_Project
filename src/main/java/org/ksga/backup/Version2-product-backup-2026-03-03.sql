@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict G9W4fGxR0SGjOXxKAoqtTDfMMQISWBen5dzroizi0HPh9KvFKaYhG7kTp232edT
+\restrict 4M9drC0q1FdAEChQjzxFCRgtiOc4Re1Go5jNNRdWv3Z1en3KZqCSOM1WKBOODNL
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -128,19 +128,6 @@ COPY public.products (id, name, unit_price, quantity, imported_date) FROM stdin;
 13	Wi-Fi 6 Router	165	50	2026-02-27
 14	Gaming Console	499.99	30	2026-02-27
 15	Bluetooth Speaker	85	140	2026-02-27
-16	Coca	11	100	2026-02-28
-17	Coca	10	100	2026-02-28
-18	aa	20	20	2026-02-28
-19	ss	22	200	2026-02-28
-20	dd	33	33	2026-02-28
-21	qq	10	100	2026-02-28
-22	ccc	10	100	2026-03-01
-23	Adapter	33	44	2026-03-01
-24	z	44	44	2026-03-01
-25	x	55	55	2026-03-01
-26	c	66	66	2026-03-01
-27	r	44	44	2026-03-01
-28	u	77	77	2026-03-01
 \.
 
 
@@ -149,7 +136,7 @@ COPY public.products (id, name, unit_price, quantity, imported_date) FROM stdin;
 --
 
 COPY public.setting (id, display_row) FROM stdin;
-1	3
+1	5
 \.
 
 
@@ -157,7 +144,7 @@ COPY public.setting (id, display_row) FROM stdin;
 -- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.products_id_seq', 28, true);
+SELECT pg_catalog.setval('public.products_id_seq', 33, true);
 
 
 --
@@ -187,5 +174,5 @@ ALTER TABLE ONLY public.setting
 -- PostgreSQL database dump complete
 --
 
-\unrestrict G9W4fGxR0SGjOXxKAoqtTDfMMQISWBen5dzroizi0HPh9KvFKaYhG7kTp232edT
+\unrestrict 4M9drC0q1FdAEChQjzxFCRgtiOc4Re1Go5jNNRdWv3Z1en3KZqCSOM1WKBOODNL
 

@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict I8xwv7kiQVbkcEhxHac5SU9PSZZHhTcZe74aZL1dFySxyMdV4je15nNi64GgCvx
+\restrict 44VSisyWOivri9EJFWnqpy5mEXIqIIabqKh82iTJeqIR64Uetr66wdknsWG8dXu
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -117,8 +117,6 @@ COPY public.products (id, name, unit_price, quantity, imported_date) FROM stdin;
 2	Monitor 27-inch	299.5	80	2026-02-27
 3	Smartphone	899	150	2026-02-27
 4	Tablet	450	120	2026-02-27
-5	Mechanical Keyboard	115	60	2026-02-27
-6	Wireless Mouse	45.99	200	2026-02-27
 7	Noise-Canceling Headphones	249.99	85	2026-02-27
 8	Smartwatch	199.5	110	2026-02-27
 9	External SSD 1TB	135	90	2026-02-27
@@ -128,22 +126,10 @@ COPY public.products (id, name, unit_price, quantity, imported_date) FROM stdin;
 13	Wi-Fi 6 Router	165	50	2026-02-27
 14	Gaming Console	499.99	30	2026-02-27
 15	Bluetooth Speaker	85	140	2026-02-27
-16	Coca	11	100	2026-02-28
-18	aa	20	20	2026-02-28
-19	ss	22	200	2026-02-28
-20	dd	33	33	2026-02-28
-21	qq	10	100	2026-02-28
-22	ccc	10	100	2026-03-01
-23	Adapter	33	44	2026-03-01
-24	z	44	44	2026-03-01
-25	x	55	55	2026-03-01
-26	c	66	66	2026-03-01
-27	r	44	44	2026-03-01
-28	u	77	77	2026-03-01
-31	hhhh	11	10	2026-03-03
-29	vvvv	200	200	2026-03-01
-32	Coca222	1	100	2026-03-03
-33	Cola	22	22	2026-03-03
+5	mkrt	115	60	2026-02-27
+34	Vivo	200	300	2026-03-03
+35	ggg   gg	1000	1000	2026-03-03
+36	nnnnn	200	34	2026-03-03
 \.
 
 
@@ -160,7 +146,7 @@ COPY public.setting (id, display_row) FROM stdin;
 -- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.products_id_seq', 33, true);
+SELECT pg_catalog.setval('public.products_id_seq', 36, true);
 
 
 --
@@ -190,5 +176,5 @@ ALTER TABLE ONLY public.setting
 -- PostgreSQL database dump complete
 --
 
-\unrestrict I8xwv7kiQVbkcEhxHac5SU9PSZZHhTcZe74aZL1dFySxyMdV4je15nNi64GgCvx
+\unrestrict 44VSisyWOivri9EJFWnqpy5mEXIqIIabqKh82iTJeqIR64Uetr66wdknsWG8dXu
 

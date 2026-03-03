@@ -1,6 +1,7 @@
 package org.ksga.model.service;
 
 import org.ksga.model.entity.Product;
+import org.ksga.utils.CredentialsLoader;
 import org.ksga.utils.DatabaseUtils;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
@@ -15,6 +16,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 
 import static org.ksga.view.BoxBorder.*;
@@ -215,9 +217,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean backupProducts(String backupDirectory) {
-        String username = "postgres";
-        String password = "Admin";
-        String database = "stock_management";
+        Properties props = CredentialsLoader.loadProperties();
+        String username = props.getProperty("username");
+        String password = props.getProperty("password");
+        String url = props.getProperty("url");
+
+        String database = url.substring(url.lastIndexOf("/") + 1);
+
         String pgDumpPath = "C:\\Program Files\\PostgreSQL\\18\\bin\\pg_dump.exe";
 
         String filePath = generateBackupFile(backupDirectory);
@@ -269,15 +275,23 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public boolean restoreProducts(String backupFilePath) {
         deleteProductTableForRestore();
+
+        Properties props = CredentialsLoader.loadProperties();
+        String username = props.getProperty("username");
+        String password = props.getProperty("password");
+        String url = props.getProperty("url");
+        String database = url.substring(url.lastIndexOf("/") + 1);
+
         String psqlPath = "C:\\Program Files\\PostgreSQL\\18\\bin\\psql.exe";
 
         ProcessBuilder pb = new ProcessBuilder(
                 psqlPath,
-                "--username=postgres",
-                "--dbname=stock_management",
+                "--username=" + username,
+                "--dbname=" + database,
                 "--file=" + backupFilePath
         );
-        pb.environment().put("PGPASSWORD", "Admin");
+
+        pb.environment().put("PGPASSWORD", password);
         try{
             Process process = pb.start();
             int exitCode = process.waitFor();
@@ -294,9 +308,6 @@ public class ProductServiceImpl implements ProductService {
     }
     @Override
     public void deleteProductTableForRestore(){
-        String url = "jdbc:postgresql://localhost:5432/stock_management";
-        String user = "postgres";
-        String password = "Admin";
 
         String[] dropCommands = {
                 "DROP TABLE IF EXISTS public.products CASCADE;",
@@ -305,11 +316,13 @@ public class ProductServiceImpl implements ProductService {
                 "DROP SEQUENCE IF EXISTS public.setting_id_seq;"
 
         };
-        try (Connection connection = DriverManager.getConnection(url, user, password);
+        try (Connection connection = DatabaseUtils.getConnection();
              Statement statement = connection.createStatement()) {
+
             for (String command : dropCommands) {
                 statement.executeUpdate(command);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

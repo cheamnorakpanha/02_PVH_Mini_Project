@@ -54,7 +54,7 @@ public class View {
             table2.addCell(cyan + "  (N) Next Page");
             table2.addCell(cyan + "  (P) Previous Page");
             table2.addCell(cyan + "  (L) Last Page");
-            table2.addCell(cyan + "  (G) GOTO" + reset);
+            table2.addCell(cyan + "  (G) Goto" + reset);
 
 
             table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
@@ -73,7 +73,7 @@ public class View {
             table2.addCell(cyan + "  (Un) Unsaved");
             table2.addCell(cyan + "  (Ba) Backup");
             table2.addCell(cyan + "  (Re) Restore");
-            table2.addCell(cyan + "  (E)EXIT" + reset);
+            table2.addCell(cyan + "  (E)Exit" + reset);
 
             System.out.println(table2.render());
 
@@ -135,7 +135,7 @@ public class View {
                     handleRestore();
                     break;
                 case "e":
-
+                    System.out.println(green + "Exiting application. Goodbye!" + reset);
                     break;
 
                 default:
@@ -228,9 +228,9 @@ public class View {
     public void handleBackup(){
         String backupDirectory = "C:\\Users\\MSI\\Desktop\\02_PVH_Mini_Project\\src\\main\\java\\org\\ksga\\backup";
 
-        BackupDate(backupDirectory);
+        BackupData(backupDirectory);
     }
-    public void BackupDate(String backupDirectory) {
+    public void BackupData(String backupDirectory) {
         boolean success = productController.backupProduct(backupDirectory);
 
         if (success) {
@@ -260,9 +260,9 @@ public class View {
 
     public void handleRestore(){
         String backupDirectory = "C:\\Users\\MSI\\Desktop\\02_PVH_Mini_Project\\src\\main\\java\\org\\ksga\\backup";
-        RestoreDate(backupDirectory);
+        RestoreData(backupDirectory);
     }
-    public void RestoreDate(String backupDirectory) {
+    public void RestoreData(String backupDirectory) {
         List<String> files = listBackupFiles(backupDirectory);
 
         if (files == null || files.isEmpty()) {
@@ -282,29 +282,35 @@ public class View {
 
         System.out.println(table.render());
 
-        System.out.print(cyan + "Enter backup_id to restore: " + reset);
+        while (true) {
+            System.out.print(cyan + "Enter backup_id to restore: " + reset);
+            String input = scanner.nextLine().trim();
 
-        try {
-            int choice = Integer.parseInt(scanner.nextLine().trim());
+            try {
+                int choice = Integer.parseInt(input);
 
+                if (choice > 0 && choice <= files.size()) {
+                    String selectedFile = files.get(choice - 1);
+                    String fullPath = backupDirectory + File.separator + selectedFile;
 
-            if (choice > 0 && choice <= files.size()) {
-                String selectedFile = files.get(choice - 1);
-                String fullPath = backupDirectory + File.separator + selectedFile;
+                    boolean success = productController.restoreProduct(fullPath);
 
-                boolean success = productController.restoreProduct(fullPath);
+                    if (success) {
+                        System.out.println(green + "Database restored successfully!" + reset);
+                        displayAllProducts();
+                    } else {
+                        System.out.println(red + "Database restore failed!" + reset);
+                    }
 
-                if (success) {
-                    System.out.println(green + "Database restored successfully!" + reset);
-                    displayAllProducts();
+                    break;
+
                 } else {
-                    System.out.println(red + "Database restore failed!" + reset);
+                    System.out.println(red + "Invalid choice! Please enter a number between 1 and " + files.size() + "." + reset);
                 }
-            } else {
-                System.out.println(red + "Invalid choice! Returning to menu." + reset);
+
+            } catch (NumberFormatException e) {
+                System.out.println(red + "Invalid input! Please enter a valid number." + reset);
             }
-        } catch (NumberFormatException e) {
-            System.out.println(red + "Invalid input! Please enter a valid number." + reset);
         }
     }
 
@@ -345,74 +351,133 @@ public class View {
     }
 
     public void writeProduct() {
-        try {
-            Integer id = productController.displayAllProducts().size() + 1;
-            System.out.println("ID: " + id);
+        List<Product> existingProducts = productController.displayAllProducts();
 
+        Integer id = existingProducts.size() + 1;
+        System.out.println("ID: " + id);
+
+        String name = "";
+        Double unitPrice = 0.0;
+        Integer quantity = 0;
+
+        while (true) {
             System.out.print("Enter the product name: ");
-            String name = scanner.nextLine().trim();
-            ProductHelper.validateProductName(name);
+            name = scanner.nextLine().trim();
 
+            if (!ProductHelper.validateProductName(name)) {
+                System.out.println(red + "Invalid input! Product name must be 4-250 characters, cannot start with a number, and cannot contain spaces." + reset);
+                continue;
+            }
+
+            boolean isDuplicate = false;
+            for (Product p : existingProducts) {
+                if (p.getName().equalsIgnoreCase(name)) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+
+            if (isDuplicate) {
+                System.out.println(red + "Invalid input! This product name already exists." + reset);
+                continue;
+            }
+
+            break;
+        }
+
+        while (true) {
             System.out.print("Enter the unit price: ");
-            Double unitPrice = Double.parseDouble(scanner.nextLine().trim());
-            ProductHelper.validateUnitPrice(unitPrice);
+            String priceStr = scanner.nextLine().trim();
 
+            if (!ProductHelper.validateUnitPrice(priceStr)) {
+                System.out.println(red + "Invalid input! Please enter a valid number for the price (e.g., 10 or 10.50)." + reset);
+                continue;
+            }
+
+            unitPrice = Double.parseDouble(priceStr);
+            if (unitPrice <= 0) {
+                System.out.println(red + "Invalid input! Unit price must be greater than 0." + reset);
+                continue;
+            }
+
+            break;
+        }
+
+        while (true) {
             System.out.print("Enter the quantity: ");
-            Integer quantity = Integer.parseInt(scanner.nextLine().trim());
-            ProductHelper.validateQuantity(quantity);
+            String qtyStr = scanner.nextLine().trim();
 
+            if (!ProductHelper.validateQuantity(qtyStr)) {
+                System.out.println(red + "Invalid input! Please enter a valid whole number for quantity." + reset);
+                continue;
+            }
+
+            quantity = Integer.parseInt(qtyStr);
+            if (quantity < 0) {
+                System.out.println(red + "Invalid input! Quantity cannot be negative." + reset);
+                continue;
+            }
+
+            break;
+        }
+
+        try {
             Product product = new Product(id, name, unitPrice, quantity, LocalDate.now());
-
             productController.insertProduct(product);
 
-            System.out.println(green + "Product create successfully! Press Enter to continue..." + reset);
+            System.out.println(green + "Product created successfully!" + reset);
             displayAllProducts();
-            scanner.nextLine();
 
-        } catch (NumberFormatException e) {
-            System.out.println(red + "Invalid input! Please enter a valid number." + reset);
+            System.out.print(yellow + "Press Enter to continue..." + reset);
+            scanner.nextLine();
         } catch (Exception e) {
-            System.out.println(red + "Validation Error: " + e.getMessage() + reset);
+            System.out.println(red + "Error saving product: " + e.getMessage() + reset);
         }
     }
 
     public void unsavedProduct() {
-        System.out.println("\n" +
-                green + "ui" + reset + " for viewing insert products and " +
-                green + "uu" + reset + " for viewing update products or " +
-                red + "b" + reset + " for back to menu"
-        );
-        System.out.print("Enter the option: ");
-        String opt = scanner.nextLine().trim().toLowerCase();
+        while (true) {
+            System.out.println("\n" +
+                    green + "ui" + reset + " for viewing insert products and " +
+                    green + "uu" + reset + " for viewing update products or " +
+                    red + "b" + reset + " for back to menu"
+            );
+            System.out.print("Enter the option: ");
+            String opt = scanner.nextLine().trim().toLowerCase();
 
-        if (opt.equals("ui") || opt.equals("uu")) {
-            System.out.println(green + "Displaying unsaved products:" + reset);
-            productController.unSaveProduct(null, opt);
-        } else if (opt.equals("b")) {
-            return;
-        } else {
-            System.out.println(red + "Invalid option! Please enter 'ui', 'uu' or 'b'." + reset);
+            if (opt.equals("ui") || opt.equals("uu")) {
+                System.out.println(green + "Displaying unsaved products:" + reset);
+                productController.unSaveProduct(null, opt);
+                break;
+            } else if (opt.equals("b")) {
+                return;
+            } else {
+                System.out.println(red + "Invalid option! Please enter 'ui', 'uu' or 'b'." + reset);
+            }
         }
     }
 
     public void saveProduct() {
-        System.out.println(
-                "\n" +
-                        green + "si" + reset + " for saving insert products and " +
-                        green + "su" + reset + " for saving update products or " +
-                        green + "b" + reset + " for back to menu"
-        );
-        System.out.print("Enter option : ");
-        String opt = scanner.nextLine().trim().toLowerCase();
+        while (true) {
+            System.out.println(
+                    "\n" +
+                            green + "si" + reset + " for saving insert products and " +
+                            green + "su" + reset + " for saving update products or " +
+                            green + "b" + reset + " for back to menu"
+            );
+            System.out.print("Enter option : ");
+            String opt = scanner.nextLine().trim().toLowerCase();
 
-        if (opt.equals("si") || opt.equals("su")) {
-            System.out.println(green + "Saving products to successfully" + reset);
-            productController.saveProduct(opt);
-            displayAllProducts();
-        } else if (opt.equals("b")) {
-            return;
-        } else {
-            System.out.println(red + "Invalid option! Please enter 'si' or 'su'." + reset);
+            if (opt.equals("si") || opt.equals("su")) {
+                System.out.println(green + "Saving products successfully" + reset);
+                productController.saveProduct(opt);
+                displayAllProducts();
+                break;
+            } else if (opt.equals("b")) {
+                return;
+            } else {
+                System.out.println(red + "Invalid option! Please enter 'si', 'su', or 'b'." + reset);
+            }
         }
     }
     private void displayPage(int page){
@@ -488,43 +553,141 @@ public class View {
                 String option = scanner.nextLine().trim();
 
                 switch (option) {
+
                     case "1":
-                        System.out.print("Input Product Name : ");
-                        String newName = scanner.nextLine().trim();
-                        ProductHelper.validateProductName(newName);
-                        name = newName;
+                        while (true) {
+                            System.out.print("Input Product Name : ");
+                            String newName = scanner.nextLine().trim();
+
+                            if (!ProductHelper.validateProductName(newName)) {
+                                System.out.println(red +
+                                        "Invalid input! Product name must be 4-250 characters and cannot start with space or number."
+                                        + reset);
+                                continue;
+                            }
+
+                            name = newName;
+                            break;
+                        }
                         break;
+
                     case "2":
-                        System.out.print("Input Unit Price : ");
-                        double newPrice = Double.parseDouble(scanner.nextLine().trim());
-                        ProductHelper.validateUnitPrice(newPrice);
-                        unitPrice = newPrice;
+                        while (true) {
+                            System.out.print("Input Unit Price : ");
+                            String priceStr = scanner.nextLine().trim();
+
+                            if (!ProductHelper.validateUnitPrice(priceStr)) {
+                                System.out.println(red +
+                                        "Invalid input! Please enter a valid number (e.g., 10 or 10.50)."
+                                        + reset);
+                                continue;
+                            }
+
+                            double newPrice = Double.parseDouble(priceStr);
+                            if (newPrice <= 0) {
+                                System.out.println(red +
+                                        "Invalid input! Unit price must be greater than 0."
+                                        + reset);
+                                continue;
+                            }
+
+                            unitPrice = newPrice;
+                            break;
+                        }
                         break;
+
                     case "3":
-                        System.out.print("Input Quantity : ");
-                        int newQty = Integer.parseInt(scanner.nextLine().trim());
-                        ProductHelper.validateQuantity(newQty);
-                        quantity = newQty;
+                        while (true) {
+                            System.out.print("Input Quantity : ");
+                            String qtyStr = scanner.nextLine().trim();
+
+                            if (!ProductHelper.validateQuantity(qtyStr)) {
+                                System.out.println(red +
+                                        "Invalid input! Please enter a valid whole number."
+                                        + reset);
+                                continue;
+                            }
+
+                            int newQty = Integer.parseInt(qtyStr);
+                            if (newQty < 0) {
+                                System.out.println(red +
+                                        "Invalid input! Quantity cannot be negative."
+                                        + reset);
+                                continue;
+                            }
+
+                            quantity = newQty;
+                            break;
+                        }
                         break;
+
                     case "4":
-                        System.out.print("Input Product Name : ");
-                        String allName = scanner.nextLine().trim();
-                        ProductHelper.validateProductName(allName);
-                        name = allName;
+                        while (true) {
+                            System.out.print("Input Product Name : ");
+                            String allName = scanner.nextLine().trim();
 
-                        System.out.print("Input Unit Price : ");
-                        double allPrice = Double.parseDouble(scanner.nextLine().trim());
-                        ProductHelper.validateUnitPrice(allPrice);
-                        unitPrice = allPrice;
+                            if (!ProductHelper.validateProductName(allName)) {
+                                System.out.println(red +
+                                        "Invalid input! Product name must be 4-250 characters and cannot start with space or number."
+                                        + reset);
+                                continue;
+                            }
 
-                        System.out.print("Input Quantity : ");
-                        int allQty = Integer.parseInt(scanner.nextLine().trim());
-                        ProductHelper.validateQuantity(allQty);
-                        quantity = allQty;
+                            name = allName;
+                            break;
+                        }
+
+                        while (true) {
+                            System.out.print("Input Unit Price : ");
+                            String allPriceStr = scanner.nextLine().trim();
+
+                            if (!ProductHelper.validateUnitPrice(allPriceStr)) {
+                                System.out.println(red +
+                                        "Invalid input! Please enter a valid number (e.g., 10 or 10.50)."
+                                        + reset);
+                                continue;
+                            }
+
+                            double allPrice = Double.parseDouble(allPriceStr);
+                            if (allPrice <= 0) {
+                                System.out.println(red +
+                                        "Invalid input! Unit price must be greater than 0."
+                                        + reset);
+                                continue;
+                            }
+
+                            unitPrice = allPrice;
+                            break;
+                        }
+
+                        while (true) {
+                            System.out.print("Input Quantity : ");
+                            String allQtyStr = scanner.nextLine().trim();
+
+                            if (!ProductHelper.validateQuantity(allQtyStr)) {
+                                System.out.println(red +
+                                        "Invalid input! Please enter a valid whole number."
+                                        + reset);
+                                continue;
+                            }
+
+                            int allQty = Integer.parseInt(allQtyStr);
+                            if (allQty < 0) {
+                                System.out.println(red +
+                                        "Invalid input! Quantity cannot be negative."
+                                        + reset);
+                                continue;
+                            }
+
+                            quantity = allQty;
+                            break;
+                        }
                         break;
+
                     case "5":
                         editing = false;
                         break;
+
                     default:
                         System.out.println(red + "Invalid option! Please choose 1-5." + reset);
                         break;

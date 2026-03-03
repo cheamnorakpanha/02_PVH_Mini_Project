@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict nRecfLQmiJULGmLelQ3gkyPBXQgJ3VjZkgFjbVD1ZVF2dAbG5nAVOp3XiA7OXtq
+\restrict I8xwv7kiQVbkcEhxHac5SU9PSZZHhTcZe74aZL1dFySxyMdV4je15nNi64GgCvx
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -129,7 +129,6 @@ COPY public.products (id, name, unit_price, quantity, imported_date) FROM stdin;
 14	Gaming Console	499.99	30	2026-02-27
 15	Bluetooth Speaker	85	140	2026-02-27
 16	Coca	11	100	2026-02-28
-17	Coca	10	100	2026-02-28
 18	aa	20	20	2026-02-28
 19	ss	22	200	2026-02-28
 20	dd	33	33	2026-02-28
@@ -141,8 +140,10 @@ COPY public.products (id, name, unit_price, quantity, imported_date) FROM stdin;
 26	c	66	66	2026-03-01
 27	r	44	44	2026-03-01
 28	u	77	77	2026-03-01
-29	makara	50	50	2026-03-01
-30	gh	400	400	2026-03-01
+31	hhhh	11	10	2026-03-03
+29	vvvv	200	200	2026-03-01
+32	Coca222	1	100	2026-03-03
+33	Cola	22	22	2026-03-03
 \.
 
 
@@ -151,7 +152,7 @@ COPY public.products (id, name, unit_price, quantity, imported_date) FROM stdin;
 --
 
 COPY public.setting (id, display_row) FROM stdin;
-1	3
+1	5
 \.
 
 
@@ -159,7 +160,7 @@ COPY public.setting (id, display_row) FROM stdin;
 -- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.products_id_seq', 30, true);
+SELECT pg_catalog.setval('public.products_id_seq', 33, true);
 
 
 --
@@ -189,5 +190,5 @@ ALTER TABLE ONLY public.setting
 -- PostgreSQL database dump complete
 --
 
-\unrestrict nRecfLQmiJULGmLelQ3gkyPBXQgJ3VjZkgFjbVD1ZVF2dAbG5nAVOp3XiA7OXtq
+\unrestrict I8xwv7kiQVbkcEhxHac5SU9PSZZHhTcZe74aZL1dFySxyMdV4je15nNi64GgCvx
 

@@ -6,7 +6,7 @@ public class ProductHelper {
     static Scanner scanner = new Scanner(System.in);
 
     private static final String PRODUCT_NAME_REGEX = "^[A-Za-z][A-Za-z0-9 ]{1,249}$";
-    private static final String UNIT_PRICE_REGEX = "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$";
+    private static final String UNIT_PRICE_REGEX = "^(?:0|[1-9]\\d{0,9})(?:\\.\\d+)?$";
     private static final String QUANTITY_REGEX = "^\\d+$";
 
     public static boolean validateProductName(String name) {

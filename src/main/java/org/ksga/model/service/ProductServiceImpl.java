@@ -171,9 +171,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void saveProduct(String saveProduct) {
-        if(saveProduct.equals("si")){
+        if (saveProduct.equals("si")) {
+
+            if (insertProduct.isEmpty()) {
+                System.out.println(red + "No products to save. Please insert a product first." + reset);
+                return;
+            }
+
             for (Product product : insertProduct) {
                 String insertQuery = "INSERT INTO products (name, unit_price, quantity, imported_date) VALUES (?, ?, ?, ?)";
+
                 try (Connection connection = DatabaseUtils.getConnection();
                      PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
 
@@ -183,14 +190,26 @@ public class ProductServiceImpl implements ProductService {
                     preparedStatement.setDate(4, Date.valueOf(product.getImportedDate()));
 
                     preparedStatement.executeUpdate();
+
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
             }
+
             insertProduct.clear();
-        } else if(saveProduct.equals("su")){
+            System.out.println(green + "Insert products saved successfully!" + reset);
+
+        } else if (saveProduct.equals("su")) {
+
+            if (updateProduct.isEmpty()) {
+                System.out.println(red + "No products to update. Please update a product first." + reset);
+                return;
+            }
+
             for (Product product : updateProduct) {
+
                 String updateQuery = "UPDATE products SET name = ?, unit_price = ?, quantity = ?, imported_date = ? WHERE id = ?";
+
                 try (Connection connection = DatabaseUtils.getConnection();
                      PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
@@ -201,22 +220,41 @@ public class ProductServiceImpl implements ProductService {
                     preparedStatement.setInt(5, product.getId());
 
                     preparedStatement.executeUpdate();
+
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
             }
+
             updateProduct.clear();
+            System.out.println(green + "Update products saved successfully!" + reset);
         }
     }
 
     @Override
     public void unsavedProduct(Product products, String unsavedProduct) {
-        if(unsavedProduct.equals("ui")){
+        if (unsavedProduct.equals("ui")) {
+
+            if (insertProduct.isEmpty()) {
+                System.out.println(red + "No unsaved insert products found." + reset);
+                return;
+            }
+
             displayProduct("insert");
-        }else if(unsavedProduct.equals("uu")){
+
+        } else if (unsavedProduct.equals("uu")) {
+
+            if (updateProduct.isEmpty()) {
+                System.out.println(red + "No unsaved update products found." + reset);
+                return;
+            }
+
             displayProduct("update");
-        }else{
-            System.out.println(red + "Invalid input. Please enter 'ui' for unsaved insert products or 'uu' for unsaved update products." + reset);
+
+        } else {
+            System.out.println(red +
+                    "Invalid input. Please enter 'ui' for unsaved insert products or 'uu' for unsaved update products."
+                    + reset);
         }
     }
 

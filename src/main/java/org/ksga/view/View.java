@@ -7,6 +7,7 @@ import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
+
 import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class View {
             table2.addCell(cyan + "  (Un) Unsaved");
             table2.addCell(cyan + "  (Ba) Backup");
             table2.addCell(cyan + "  (Re) Restore");
-            table2.addCell(cyan + "  (E)Exit" + reset);
+            table2.addCell(cyan + "  (E) Exit" + reset);
 
             System.out.println(table2.render());
 
@@ -93,13 +94,7 @@ public class View {
                     displayPage(totalPages);
                     break;
                 case "g":
-                    System.out.print("page number :");
-                    try {
-                        int page = Integer.parseInt(scanner.nextLine().trim());
-                        displayPage(page);
-                    } catch (NumberFormatException e) {
-                        System.out.println(red + "Invalid page number!" + reset);
-                    }
+                    goToPage();
                     break;
                 case "w":
                     writeProduct();
@@ -133,11 +128,32 @@ public class View {
                     break;
                 case "e":
                     System.out.println(green + "Exiting application. Goodbye!" + reset);
-                    break;
+                    System.exit(0);
                 default:
                     System.out.println(red + "invalid option, please choose valid option." + reset);
             }
         } while (true);
+    }
+
+    private void goToPage() {
+        while (true) {
+            System.out.print("page number : ");
+            String input = scanner.nextLine().trim();
+
+            try {
+                int page = Integer.parseInt(input);
+
+                if (page < 1) {
+                    System.out.println(red + "Page number must be at least 1!" + reset);
+                    continue;
+                }
+
+                displayPage(page);
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println(red + "Invalid page number!" + reset);
+            }
+        }
     }
 
     public void setRow() {
@@ -150,21 +166,30 @@ public class View {
 
         switch (option) {
             case "1":
-                System.out.print("Enter number of rows per page: ");
-                try {
-                    int newRows = Integer.parseInt(scanner.nextLine().trim());
-                    if (newRows < 1) {
-                        System.out.println(red + "Row count must be at least 1!" + reset);
+                while (true) {
+                    System.out.print("Enter number of rows per page: ");
+                    String input = scanner.nextLine().trim();
+
+                    try {
+                        int newRows = Integer.parseInt(input);
+
+                        if (newRows < 1) {
+                            System.out.println(red + "Row count must be at least 1!" + reset);
+                            continue;
+                        }
+
+                        rowPerPage = newRows;
+                        productController.setRow(rowPerPage);
+
+                        System.out.println(green + "Rows per page set to " + rowPerPage + " and saved!" + reset);
+                        displayPage(currentPage);
                         break;
+                    } catch (NumberFormatException e) {
+                        System.out.println(red + "Invalid input! Please enter a valid number." + reset);
                     }
-                    rowPerPage = newRows;
-                    productController.setRow(rowPerPage);
-                    System.out.println(green + "Rows per page set to " + rowPerPage + " and saved!" + reset);
-                    displayPage(currentPage);
-                } catch (NumberFormatException e) {
-                    System.out.println(red + "Invalid input! Please enter a valid number." + reset);
                 }
                 break;
+
             case "2":
                 rowPerPage = 10;
                 productController.setRow(rowPerPage);

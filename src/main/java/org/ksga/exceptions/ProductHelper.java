@@ -5,26 +5,17 @@ import java.util.Scanner;
 public class ProductHelper {
     static Scanner scanner = new Scanner(System.in);
 
+    private static final String PRODUCT_NAME_REGEX = "^[A-Za-z][A-Za-z0-9]{1,249}$";
+    private static final String UNIT_PRICE_REGEX = "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$";
+    private static final String QUANTITY_REGEX = "^\\d+$";
+
     public static boolean validateProductName(String name) {
         if (name == null) {
             return false;
         }
 
         name = name.trim();
-
-        if (name.length() < 2 || name.length() > 250) {
-            return false;
-        }
-
-        if (Character.isDigit(name.charAt(0))) {
-            return false;
-        }
-
-        if (name.contains(" ")) {
-            return false;
-        }
-
-        return true;
+        return name.matches(PRODUCT_NAME_REGEX);
     }
 
     public static boolean validateUnitPrice(String unitPrice) {
@@ -32,12 +23,14 @@ public class ProductHelper {
             return false;
         }
 
-        try {
-            double price = Double.parseDouble(unitPrice);
-            return price > 0;
-        } catch (NumberFormatException e) {
+        unitPrice = unitPrice.trim();
+
+        if (!unitPrice.matches(UNIT_PRICE_REGEX)) {
             return false;
         }
+
+        double price = Double.parseDouble(unitPrice);
+        return price > 0;
     }
 
     public static boolean validateQuantity(String qtyProducts) {
@@ -45,11 +38,13 @@ public class ProductHelper {
             return false;
         }
 
-        try {
-            int qty = Integer.parseInt(qtyProducts);
-            return qty >= 0;
-        } catch (NumberFormatException e) {
+        qtyProducts = qtyProducts.trim();
+
+        if (!qtyProducts.matches(QUANTITY_REGEX)) {
             return false;
         }
+
+        int qty = Integer.parseInt(qtyProducts);
+        return qty >= 0;
     }
 }

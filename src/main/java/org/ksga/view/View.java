@@ -460,22 +460,28 @@ public class View {
 
     public void unsavedProduct() {
         while (true) {
-            System.out.println("\n" +
-                    green + "ui" + reset + " for viewing insert products and " +
-                    green + "uu" + reset + " for viewing update products or " +
-                    red + "b" + reset + " for back to menu"
+
+            System.out.println(
+                    "\n" +
+                            green + "ui" + reset + " for viewing insert products and " +
+                            green + "uu" + reset + " for viewing update products or " +
+                            red + "b" + reset + " for back to menu"
             );
+
             System.out.print("Enter the option: ");
             String opt = scanner.nextLine().trim().toLowerCase();
 
             if (opt.equals("ui") || opt.equals("uu")) {
-                System.out.println(green + "Displaying unsaved products:" + reset);
+
                 productController.unSaveProduct(null, opt);
                 break;
+
             } else if (opt.equals("b")) {
                 return;
             } else {
-                System.out.println(red + "Invalid option! Please enter 'ui', 'uu' or 'b'." + reset);
+                System.out.println(red +
+                        "Invalid option! Please enter 'ui', 'uu' or 'b'."
+                        + reset);
             }
         }
     }
@@ -492,10 +498,11 @@ public class View {
             String opt = scanner.nextLine().trim().toLowerCase();
 
             if (opt.equals("si") || opt.equals("su")) {
-                System.out.println(green + "Saving products successfully" + reset);
-                productController.saveProduct(opt);
-                displayAllProducts();
-                break;
+                if (opt.equals("si") || opt.equals("su")) {
+                    productController.saveProduct(opt);
+                    displayAllProducts();
+                    break;
+                }
             } else if (opt.equals("b")) {
                 return;
             } else {

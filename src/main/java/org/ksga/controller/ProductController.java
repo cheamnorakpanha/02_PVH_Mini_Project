@@ -1,11 +1,7 @@
 package org.ksga.controller;
 
-
 import org.ksga.model.entity.Product;
 import org.ksga.model.service.ProductService;
-
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 public class ProductController {
@@ -35,7 +31,6 @@ public class ProductController {
         return productService.deleteProduct(id);
     }
 
-
     public List<Product> getProductByName(String name) {
         return productService.searchProductsByName(name);
     }
@@ -64,7 +59,4 @@ public class ProductController {
         return productService.restoreProducts(backupFilePath);
     }
 
-    public void displayProduct(String displayProduct) {
-        productService.displayProduct(displayProduct);
-    }
 }

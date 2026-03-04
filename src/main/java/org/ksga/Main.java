@@ -3,10 +3,8 @@ package org.ksga;
 import org.ksga.controller.ProductController;
 import org.ksga.model.service.ProductService;
 import org.ksga.model.service.ProductServiceImpl;
-import org.ksga.utils.DatabaseUtils;
 import org.ksga.view.View;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.ksga.view.BoxBorder.*;

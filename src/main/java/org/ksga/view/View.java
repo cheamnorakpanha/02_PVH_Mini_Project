@@ -7,9 +7,7 @@ import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
-
 import java.io.File;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +23,7 @@ public class View {
     private int currentPage = 1;
     private int rowPerPage = 10;
 
-    public View(ProductController productController){
+    public View(ProductController productController) {
         this.productController = productController;
         int savedRow = productController.displayRow();
         if (savedRow > 0) {
@@ -33,7 +31,7 @@ public class View {
         }
     }
 
-    public void displayAllProducts(){
+    public void displayAllProducts() {
         displayPage(currentPage);
         do {
 
@@ -41,7 +39,7 @@ public class View {
 
             table2.addCell(" ");
             table2.addCell(" ", new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            table2.addCell(magenta + "APPLICATION MENU"+ reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            table2.addCell(magenta + "APPLICATION MENU" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
             table2.addCell(" ", new CellStyle(CellStyle.HorizontalAlign.CENTER));
             table2.addCell(" ");
             table2.addCell(HORIZONTAL_CONNECTOR_BORDER.repeat(25));
@@ -77,15 +75,15 @@ public class View {
 
             System.out.println(table2.render());
 
-            System.out.print(blue + "Choose Option: " +reset);
+            System.out.print(blue + "Choose Option: " + reset);
             String option = scanner.nextLine().trim().toLowerCase();
 
             switch (option) {
                 case "n":
-                    displayPage(currentPage+1);
+                    displayPage(currentPage + 1);
                     break;
                 case "p":
-                    displayPage(currentPage-1);
+                    displayPage(currentPage - 1);
                     break;
                 case "f":
                     displayPage(1);
@@ -103,7 +101,6 @@ public class View {
                         System.out.println(red + "Invalid page number!" + reset);
                     }
                     break;
-
                 case "w":
                     writeProduct();
                     break;
@@ -137,9 +134,8 @@ public class View {
                 case "e":
                     System.out.println(green + "Exiting application. Goodbye!" + reset);
                     break;
-
                 default:
-                    System.out.println(red+"invalid option, please choose valid option."+ reset);
+                    System.out.println(red + "invalid option, please choose valid option." + reset);
             }
         } while (true);
     }
@@ -182,7 +178,8 @@ public class View {
                 break;
         }
     }
-    public  void searchById() {
+
+    public void searchById() {
         int id;
         Product product;
         while (true) {
@@ -224,11 +221,12 @@ public class View {
         System.out.println(table.render());
     }
 
-    public void handleBackup(){
+    public void handleBackup() {
         String backupDirectory = "C:\\Users\\MSI\\Desktop\\02_PVH_Mini_Project\\src\\main\\java\\org\\ksga\\backup";
 
         BackupData(backupDirectory);
     }
+
     public void BackupData(String backupDirectory) {
         boolean success = productController.backupProduct(backupDirectory);
 
@@ -257,10 +255,11 @@ public class View {
         return sqlFiles;
     }
 
-    public void handleRestore(){
+    public void handleRestore() {
         String backupDirectory = "C:\\Users\\MSI\\Desktop\\02_PVH_Mini_Project\\src\\main\\java\\org\\ksga\\backup";
         RestoreData(backupDirectory);
     }
+
     public void RestoreData(String backupDirectory) {
         List<String> files = listBackupFiles(backupDirectory);
 
@@ -272,7 +271,7 @@ public class View {
         Table table = new Table(2, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
         table.setColumnWidth(0, 5, 5);
         table.setColumnWidth(1, 50, 50);
-        table.addCell(magenta +"List of Backup Data" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 2);
+        table.addCell(magenta + "List of Backup Data" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 2);
 
         for (int i = 0; i < files.size(); i++) {
             table.addCell(yellow + String.valueOf(i + 1) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
@@ -364,7 +363,7 @@ public class View {
             name = scanner.nextLine().trim();
 
             if (!ProductHelper.validateProductName(name)) {
-                System.out.println(red + "Invalid input! Product name must be 4-250 characters, cannot start with a number, and cannot contain spaces." + reset);
+                System.out.println(red + "Invalid input! Product name must be 2-250 characters, cannot start with a number, and cannot contain spaces." + reset);
                 continue;
             }
 
@@ -479,7 +478,8 @@ public class View {
             }
         }
     }
-    private void displayPage(int page){
+
+    private void displayPage(int page) {
         products = productController.displayAllProducts();
         int totalRecords = products.size();
         int totalPage = (int) Math.ceil((double) totalRecords / rowPerPage);
@@ -487,37 +487,36 @@ public class View {
         if (totalPage == 0) {
             totalPage = 1;
         }
-        if(page < 1) page = 1;
-        if(page > totalPage) page = totalPage;
+        if (page < 1) page = 1;
+        if (page > totalPage) page = totalPage;
 
         currentPage = page;
 
-        int start = (currentPage - 1)*rowPerPage;
-        int end = Math.min(start + rowPerPage,totalRecords);
+        int start = (currentPage - 1) * rowPerPage;
+        int end = Math.min(start + rowPerPage, totalRecords);
 
         Table table = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
-        table.addCell(magenta +"ALL PRODUCTS INFO" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 5);
+        table.addCell(magenta + "ALL PRODUCTS INFO" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 5);
         table.addCell(red + "ID" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        table.addCell( red+"NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+        table.addCell(red + "NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
         table.addCell(red + "UNIT PRICE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
         table.addCell(red + "QUANTITY" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
         table.addCell(red + "IMPORTED_DATE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
         for (int i = 0; i < 5; i++) {
             table.setColumnWidth(i, 25, 25);
         }
-        for (int i =start;i<end;i++){
+        for (int i = start; i < end; i++) {
             Product p = products.get(i);
             table.addCell(blue + String.valueOf(p.getId()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            table.addCell(  p.getName() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            table.addCell(p.getName() + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
             table.addCell(cyan + String.valueOf(p.getUnitPrice()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
             table.addCell(green + String.valueOf(p.getQuantity()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
             table.addCell(magenta + String.valueOf(p.getImportedDate()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
         }
-        table.addCell(magenta + "Page : "+currentPage+" of "+totalPage + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER),2);
-        table.addCell(magenta + "Total Record : "+totalRecords+ reset, new CellStyle(CellStyle.HorizontalAlign.CENTER),3);
+        table.addCell(magenta + "Page : " + currentPage + " of " + totalPage + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 2);
+        table.addCell(magenta + "Total Record : " + totalRecords + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 3);
         System.out.println(table.render());
     }
-
 
     public void updateProduct() {
         try {
@@ -560,7 +559,7 @@ public class View {
 
                             if (!ProductHelper.validateProductName(newName)) {
                                 System.out.println(red +
-                                        "Invalid input! Product name must be 4-250 characters and cannot start with space or number."
+                                        "Invalid input! Product name must be 2-250 characters and cannot start with space or number."
                                         + reset);
                                 continue;
                             }
@@ -627,7 +626,7 @@ public class View {
 
                             if (!ProductHelper.validateProductName(allName)) {
                                 System.out.println(red +
-                                        "Invalid input! Product name must be 4-250 characters and cannot start with space or number."
+                                        "Invalid input! Product name must be 2-250 characters and cannot start with space or number."
                                         + reset);
                                 continue;
                             }
@@ -739,7 +738,10 @@ public class View {
             List<Product> all = productController.displayAllProducts();
             Product target = null;
             for (Product p : all) {
-                if (p.getId() == id) { target = p; break; }
+                if (p.getId() == id) {
+                    target = p;
+                    break;
+                }
             }
 
             if (target == null) {

@@ -10,8 +10,6 @@ import org.nocrala.tools.texttablefmt.Table;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,8 +23,6 @@ import static org.ksga.view.BoxBorder.*;
 public class ProductServiceImpl implements ProductService {
     ArrayList<Product> insertProduct = new ArrayList<>();
     ArrayList<Product> updateProduct = new ArrayList<>();
-
-    public static Scanner scanner = new Scanner(System.in);
 
     @Override
     public List<Product> displayProductList() {
@@ -252,7 +248,6 @@ public class ProductServiceImpl implements ProductService {
     }
     @Override
     public String generateBackupFile(String backupDirectory) {
-        // create folder if not exist
         File folder = new File(backupDirectory);
         if(!folder.exists()){
             folder.mkdirs();

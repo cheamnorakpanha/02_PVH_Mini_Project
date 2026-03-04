@@ -11,7 +11,6 @@ public class CredentialsLoader {
     public static Properties loadProperties() {
         Properties properties = new Properties();
 
-        // Use ClassLoader to find the file in the classpath
         try (InputStream input = CredentialsLoader.class.getClassLoader().getResourceAsStream(FILE_NAME)) {
             if (input == null) {
                 throw new RuntimeException("Unable to find " + FILE_NAME + " in the classpath.");

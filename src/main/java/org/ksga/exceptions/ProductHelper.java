@@ -1,8 +1,6 @@
 package org.ksga.exceptions;
 
-
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 public class ProductHelper {
     static Scanner scanner = new Scanner(System.in);
@@ -14,7 +12,7 @@ public class ProductHelper {
 
         name = name.trim();
 
-        if (name.length() < 4 || name.length() > 250) {
+        if (name.length() < 2 || name.length() > 250) {
             return false;
         }
 
@@ -43,7 +41,7 @@ public class ProductHelper {
     }
 
     public static boolean validateQuantity(String qtyProducts) {
-        if (qtyProducts == null){
+        if (qtyProducts == null) {
             return false;
         }
 

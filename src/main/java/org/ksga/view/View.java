@@ -143,13 +143,9 @@ public class View {
             try {
                 int page = Integer.parseInt(input);
 
-                if (page < 1) {
-                    System.out.println(red + "Page number must be at least 1!" + reset);
-                    continue;
+                if (displayPage(page)) {
+                    break;
                 }
-
-                displayPage(page);
-                break;
             } catch (NumberFormatException e) {
                 System.out.println(red + "Invalid page number!" + reset);
             }
@@ -157,50 +153,56 @@ public class View {
     }
 
     public void setRow() {
-        System.out.println(cyan + "Current rows per page: " + yellow + rowPerPage + reset);
-        System.out.println(cyan + "1. Set new row count");
-        System.out.println("2. Reset to default (10)");
-        System.out.println("3. Back to menu" + reset);
-        System.out.print(blue + "Choose an option: " + reset);
-        String option = scanner.nextLine().trim();
+        while (true) {
+            System.out.println(cyan + "Current rows per page: " + yellow + rowPerPage + reset);
+            System.out.println(cyan + "1. Set new row count");
+            System.out.println("2. Reset to default (10)");
+            System.out.println("3. Back to menu" + reset);
+            System.out.print(blue + "Choose an option: " + reset);
 
-        switch (option) {
-            case "1":
-                while (true) {
-                    System.out.print("Enter number of rows per page: ");
-                    String input = scanner.nextLine().trim();
+            String option = scanner.nextLine().trim();
 
-                    try {
-                        int newRows = Integer.parseInt(input);
+            switch (option) {
 
-                        if (newRows < 1) {
-                            System.out.println(red + "Row count must be at least 1!" + reset);
-                            continue;
+                case "1":
+                    while (true) {
+                        System.out.print("Enter number of rows per page: ");
+                        String input = scanner.nextLine().trim();
+
+                        try {
+                            int newRows = Integer.parseInt(input);
+
+                            if (newRows < 1) {
+                                System.out.println(red + "Row count must be at least 1!" + reset);
+                                continue;
+                            }
+
+                            rowPerPage = newRows;
+                            productController.setRow(rowPerPage);
+
+                            System.out.println(green + "Rows per page set to " + rowPerPage + " and saved!" + reset);
+                            displayPage(currentPage);
+                            return; // stop loop when correct input
+
+                        } catch (NumberFormatException e) {
+                            System.out.println(red + "Invalid input! Please enter a valid number." + reset);
                         }
-
-                        rowPerPage = newRows;
-                        productController.setRow(rowPerPage);
-
-                        System.out.println(green + "Rows per page set to " + rowPerPage + " and saved!" + reset);
-                        displayPage(currentPage);
-                        break;
-                    } catch (NumberFormatException e) {
-                        System.out.println(red + "Invalid input! Please enter a valid number." + reset);
                     }
-                }
-                break;
 
-            case "2":
-                rowPerPage = 10;
-                productController.setRow(rowPerPage);
-                System.out.println(green + "Rows per page reset to default (10) and saved!" + reset);
-                displayPage(currentPage);
-                break;
-            case "3":
-                break;
-            default:
-                System.out.println(red + "Invalid option! Please choose 1-3." + reset);
-                break;
+                case "2":
+                    rowPerPage = 10;
+                    productController.setRow(rowPerPage);
+
+                    System.out.println(green + "Rows per page reset to default (10) and saved!" + reset);
+                    displayPage(currentPage);
+                    return;
+
+                case "3":
+                    return;
+
+                default:
+                    System.out.println(red + "Invalid option! Please choose 1-3." + reset);
+            }
         }
     }
 
@@ -338,39 +340,58 @@ public class View {
     }
 
     public void searchProductByName() {
-        System.out.print("Input Product Name For Search: ");
-        String inputName = scanner.nextLine();
+        while (true) {
 
-        if (inputName.trim().isEmpty()) {
-            System.out.println(red + "Search term cannot be empty." + reset);
-            return;
-        }
+            System.out.print("Input Product Name For Search: ");
+            String inputName = scanner.nextLine().trim();
 
-        List<Product> searchResults = productController.getProductByName(inputName);
+            if (inputName.isEmpty()) {
+                System.out.println(red + "Search term cannot be empty." + reset);
+                continue;
+            }
 
-        if (searchResults.isEmpty()) {
-            System.out.println(red + "No products found matching: " + inputName + reset);
-            return;
-        }
+            if (inputName.matches("-?\\d+")) {
+                System.out.println(red + "Search must be a product name, not a number." + reset);
+                continue;
+            }
 
-        Table searchTable = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
-        searchTable.addCell(magenta + "SEARCH BY NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 5);
-        searchTable.addCell(red + "ID" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        searchTable.addCell(red + "NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        searchTable.addCell(red + "UNIT PRICE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        searchTable.addCell(red + "QUANTITY" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        searchTable.addCell(red + "IMPORTED DATE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        for (int i = 0; i < 5; i++) {
-            searchTable.setColumnWidth(i, 25, 25);
+            List<Product> searchResults = productController.getProductByName(inputName);
+
+            if (searchResults.isEmpty()) {
+                System.out.println(red + "No products found matching: " + inputName + reset);
+                continue;
+            }
+
+            Table searchTable = new Table(5, BorderStyle.UNICODE_BOX_HEAVY_BORDER, ShownBorders.ALL);
+            searchTable.addCell(magenta + "SEARCH BY NAME" + reset,
+                    new CellStyle(CellStyle.HorizontalAlign.CENTER), 5);
+
+            searchTable.addCell(red + "ID" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            searchTable.addCell(red + "NAME" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            searchTable.addCell(red + "UNIT PRICE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            searchTable.addCell(red + "QUANTITY" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            searchTable.addCell(red + "IMPORTED DATE" + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
+
+            for (int i = 0; i < 5; i++) {
+                searchTable.setColumnWidth(i, 25, 25);
+            }
+
+            for (Product product : searchResults) {
+                searchTable.addCell(blue + String.valueOf(product.getId()) + reset,
+                        new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                searchTable.addCell(product.getName(),
+                        new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                searchTable.addCell(cyan + String.format("%.2f", product.getUnitPrice()) + reset,
+                        new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                searchTable.addCell(green + String.valueOf(product.getQuantity()) + reset,
+                        new CellStyle(CellStyle.HorizontalAlign.CENTER));
+                searchTable.addCell(magenta + String.valueOf(product.getImportedDate()) + reset,
+                        new CellStyle(CellStyle.HorizontalAlign.CENTER));
+            }
+
+            System.out.println(searchTable.render());
+            break;
         }
-        for (Product product : searchResults) {
-            searchTable.addCell(blue + String.valueOf(product.getId()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            searchTable.addCell(product.getName(), new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            searchTable.addCell(cyan + String.format("%.2f", product.getUnitPrice()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            searchTable.addCell(green + String.valueOf(product.getQuantity()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-            searchTable.addCell(magenta + String.valueOf(product.getImportedDate()) + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER));
-        }
-        System.out.println(searchTable.render());
     }
 
     public void writeProduct() {
@@ -385,10 +406,22 @@ public class View {
 
         while (true) {
             System.out.print("Enter the product name: ");
-            name = scanner.nextLine().trim();
+            String rawInput = scanner.nextLine();
+
+            if (rawInput.startsWith(" ")) {
+                System.out.println(red + "Invalid input! Product name cannot start with spaces." + reset);
+                continue;
+            }
+
+            if (rawInput.contains("  ")) {
+                System.out.println(red + "Invalid input! Only one space is allowed between words." + reset);
+                continue;
+            }
+
+            name = rawInput.trim().replaceAll("\\s+", " ");
 
             if (!ProductHelper.validateProductName(name)) {
-                System.out.println(red + "Invalid input! Product name must be 2-250 characters, cannot start with a number, and cannot contain spaces." + reset);
+                System.out.println(red + "Invalid input! Product name must be 2-250 characters, cannot start with a number, and can only contain letters, numbers, and spaces." + reset);
                 continue;
             }
 
@@ -412,12 +445,13 @@ public class View {
             System.out.print("Enter the unit price: ");
             String priceStr = scanner.nextLine().trim();
 
-            if (!ProductHelper.validateUnitPrice(priceStr)) {
-                System.out.println(red + "Invalid input! Please enter a valid number for the price (e.g., 10 or 10.50)." + reset);
+            if (!priceStr.matches("\\d{1,10}(\\.\\d{1,2})?")) {
+                System.out.println(red + "Invalid input! Price must be a number with up to 10 digits (e.g., 10 or 10.50)." + reset);
                 continue;
             }
 
             unitPrice = Double.parseDouble(priceStr);
+
             if (unitPrice <= 0) {
                 System.out.println(red + "Invalid input! Unit price must be greater than 0." + reset);
                 continue;
@@ -430,14 +464,15 @@ public class View {
             System.out.print("Enter the quantity: ");
             String qtyStr = scanner.nextLine().trim();
 
-            if (!ProductHelper.validateQuantity(qtyStr)) {
-                System.out.println(red + "Invalid input! Please enter a valid whole number for quantity." + reset);
+            if (!qtyStr.matches("\\d{1,10}")) {
+                System.out.println(red + "Invalid input! Quantity must be a number with up to 10 digits." + reset);
                 continue;
             }
 
             quantity = Integer.parseInt(qtyStr);
-            if (quantity < 0) {
-                System.out.println(red + "Invalid input! Quantity cannot be negative." + reset);
+
+            if (quantity <= 0) {
+                System.out.println(red + "Invalid input! Quantity must be greater than 0." + reset);
                 continue;
             }
 
@@ -504,7 +539,7 @@ public class View {
         }
     }
 
-    private void displayPage(int page) {
+    private boolean displayPage(int page) {
         products = productController.displayAllProducts();
         int totalRecords = products.size();
         int totalPage = (int) Math.ceil((double) totalRecords / rowPerPage);
@@ -512,8 +547,19 @@ public class View {
         if (totalPage == 0) {
             totalPage = 1;
         }
-        if (page < 1) page = 1;
-        if (page > totalPage) page = totalPage;
+
+        if (page > totalPage && page == currentPage + 1) {
+            page = totalPage;
+        }
+
+        if (page < 1 && page == currentPage - 1) {
+            page = 1;
+        }
+
+        if (page < 1 || page > totalPage) {
+            System.out.println(red + "Invalid page! Please enter a page between 1 and " + totalPage + "." + reset);
+            return false;
+        }
 
         currentPage = page;
 
@@ -541,199 +587,216 @@ public class View {
         table.addCell(magenta + "Page : " + currentPage + " of " + totalPage + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 2);
         table.addCell(magenta + "Total Record : " + totalRecords + reset, new CellStyle(CellStyle.HorizontalAlign.CENTER), 3);
         System.out.println(table.render());
+        return true;
     }
 
     public void updateProduct() {
-        try {
-            System.out.print("Enter the product ID to update: ");
-            int id = Integer.parseInt(scanner.nextLine().trim());
+        List<Product> all = productController.displayAllProducts();
+        Product existingProduct = null;
 
-            List<Product> all = productController.displayAllProducts();
-            Product existingProduct = null;
-            for (Product p : all) {
-                if (p.getId() == id) {
-                    existingProduct = p;
-                    break;
+        while (true) {
+            try {
+                System.out.print("Enter the product ID to update: ");
+                int id = Integer.parseInt(scanner.nextLine().trim());
+
+                for (Product p : all) {
+                    if (p.getId() == id) {
+                        existingProduct = p;
+                        break;
+                    }
                 }
-            }
 
-            if (existingProduct == null) {
-                System.out.println(red + "Product with ID " + id + " not found!" + reset);
-                return;
-            }
-
-            System.out.println(green + "Existing Product Details:" + reset);
-            displayProductTable(existingProduct);
-
-            String name = existingProduct.getName();
-            double unitPrice = existingProduct.getUnitPrice();
-            int quantity = existingProduct.getQuantity();
-
-            boolean editing = true;
-            while (editing) {
-                System.out.println(cyan + "1. Name   2. Unit Price   3. Qty   4. All Field   5. Exit" + reset);
-                System.out.print("Choose an option to update : ");
-                String option = scanner.nextLine().trim();
-
-                switch (option) {
-
-                    case "1":
-                        while (true) {
-                            System.out.print("Input Product Name : ");
-                            String newName = scanner.nextLine().trim();
-
-                            if (!ProductHelper.validateProductName(newName)) {
-                                System.out.println(red +
-                                        "Invalid input! Product name must be 2-250 characters and cannot start with space or number."
-                                        + reset);
-                                continue;
-                            }
-
-                            name = newName;
-                            break;
-                        }
-                        break;
-
-                    case "2":
-                        while (true) {
-                            System.out.print("Input Unit Price : ");
-                            String priceStr = scanner.nextLine().trim();
-
-                            if (!ProductHelper.validateUnitPrice(priceStr)) {
-                                System.out.println(red +
-                                        "Invalid input! Please enter a valid number (e.g., 10 or 10.50)."
-                                        + reset);
-                                continue;
-                            }
-
-                            double newPrice = Double.parseDouble(priceStr);
-                            if (newPrice <= 0) {
-                                System.out.println(red +
-                                        "Invalid input! Unit price must be greater than 0."
-                                        + reset);
-                                continue;
-                            }
-
-                            unitPrice = newPrice;
-                            break;
-                        }
-                        break;
-
-                    case "3":
-                        while (true) {
-                            System.out.print("Input Quantity : ");
-                            String qtyStr = scanner.nextLine().trim();
-
-                            if (!ProductHelper.validateQuantity(qtyStr)) {
-                                System.out.println(red +
-                                        "Invalid input! Please enter a valid whole number."
-                                        + reset);
-                                continue;
-                            }
-
-                            int newQty = Integer.parseInt(qtyStr);
-                            if (newQty < 0) {
-                                System.out.println(red +
-                                        "Invalid input! Quantity cannot be negative."
-                                        + reset);
-                                continue;
-                            }
-
-                            quantity = newQty;
-                            break;
-                        }
-                        break;
-
-                    case "4":
-                        while (true) {
-                            System.out.print("Input Product Name : ");
-                            String allName = scanner.nextLine().trim();
-
-                            if (!ProductHelper.validateProductName(allName)) {
-                                System.out.println(red +
-                                        "Invalid input! Product name must be 2-250 characters and cannot start with space or number."
-                                        + reset);
-                                continue;
-                            }
-
-                            name = allName;
-                            break;
-                        }
-
-                        while (true) {
-                            System.out.print("Input Unit Price : ");
-                            String allPriceStr = scanner.nextLine().trim();
-
-                            if (!ProductHelper.validateUnitPrice(allPriceStr)) {
-                                System.out.println(red +
-                                        "Invalid input! Please enter a valid number (e.g., 10 or 10.50)."
-                                        + reset);
-                                continue;
-                            }
-
-                            double allPrice = Double.parseDouble(allPriceStr);
-                            if (allPrice <= 0) {
-                                System.out.println(red +
-                                        "Invalid input! Unit price must be greater than 0."
-                                        + reset);
-                                continue;
-                            }
-
-                            unitPrice = allPrice;
-                            break;
-                        }
-
-                        while (true) {
-                            System.out.print("Input Quantity : ");
-                            String allQtyStr = scanner.nextLine().trim();
-
-                            if (!ProductHelper.validateQuantity(allQtyStr)) {
-                                System.out.println(red +
-                                        "Invalid input! Please enter a valid whole number."
-                                        + reset);
-                                continue;
-                            }
-
-                            int allQty = Integer.parseInt(allQtyStr);
-                            if (allQty < 0) {
-                                System.out.println(red +
-                                        "Invalid input! Quantity cannot be negative."
-                                        + reset);
-                                continue;
-                            }
-
-                            quantity = allQty;
-                            break;
-                        }
-                        break;
-
-                    case "5":
-                        editing = false;
-                        break;
-
-                    default:
-                        System.out.println(red + "Invalid option! Please choose 1-5." + reset);
-                        break;
+                if (existingProduct == null) {
+                    System.out.println(red + "Product with ID " + id + " not found!" + reset);
+                    continue;
                 }
+
+                System.out.println(green + "Existing Product Details:" + reset);
+                displayProductTable(existingProduct);
+
+                String name = existingProduct.getName();
+                double unitPrice = existingProduct.getUnitPrice();
+                int quantity = existingProduct.getQuantity();
+
+                boolean editing = true;
+                while (editing) {
+                    System.out.println(cyan + "1. Name   2. Unit Price   3. Qty   4. All Field   5. Exit" + reset);
+                    System.out.print("Choose an option to update : ");
+                    String option = scanner.nextLine().trim();
+
+                    switch (option) {
+
+                        case "1":
+                            while (true) {
+                                System.out.print("Input Product Name : ");
+                                String rawInput = scanner.nextLine();
+
+                                if (rawInput.startsWith(" ")) {
+                                    System.out.println(red + "Invalid input! Product name cannot start with spaces." + reset);
+                                    continue;
+                                }
+
+                                if (rawInput.contains("  ")) {
+                                    System.out.println(red + "Invalid input! Only one space is allowed between words." + reset);
+                                    continue;
+                                }
+
+                                String newName = rawInput.trim();
+
+                                if (!ProductHelper.validateProductName(newName)) {
+                                    System.out.println(red +
+                                            "Invalid input! Product name must be 2-250 characters, cannot start with a number, and can only contain letters, numbers, and spaces."
+                                            + reset);
+                                    continue;
+                                }
+
+                                name = newName;
+                                break;
+                            }
+                            break;
+
+                        case "2":
+                            while (true) {
+                                System.out.print("Input Unit Price : ");
+                                String priceStr = scanner.nextLine().trim();
+
+                                if (!ProductHelper.validateUnitPrice(priceStr)) {
+                                    System.out.println(red +
+                                            "Invalid input! Please enter a valid number (e.g., 10 or 10.50)."
+                                            + reset);
+                                    continue;
+                                }
+
+                                double newPrice = Double.parseDouble(priceStr);
+                                if (newPrice <= 0) {
+                                    System.out.println(red +
+                                            "Invalid input! Unit price must be greater than 0."
+                                            + reset);
+                                    continue;
+                                }
+
+                                unitPrice = newPrice;
+                                break;
+                            }
+                            break;
+
+                        case "3":
+                            while (true) {
+                                System.out.print("Input Quantity : ");
+                                String qtyStr = scanner.nextLine().trim();
+
+                                if (!ProductHelper.validateQuantity(qtyStr)) {
+                                    System.out.println(red +
+                                            "Invalid input! Please enter a valid whole number."
+                                            + reset);
+                                    continue;
+                                }
+
+                                int newQty = Integer.parseInt(qtyStr);
+                                if (newQty < 0) {
+                                    System.out.println(red +
+                                            "Invalid input! Quantity cannot be negative."
+                                            + reset);
+                                    continue;
+                                }
+
+                                quantity = newQty;
+                                break;
+                            }
+                            break;
+
+                        case "4":
+                            while (true) {
+                                System.out.print("Input Product Name : ");
+                                String allName = scanner.nextLine().trim();
+
+                                if (!ProductHelper.validateProductName(allName)) {
+                                    System.out.println(red +
+                                            "Invalid input! Product name must be 2-250 characters and cannot start with space or number."
+                                            + reset);
+                                    continue;
+                                }
+
+                                name = allName;
+                                break;
+                            }
+
+                            while (true) {
+                                System.out.print("Input Unit Price : ");
+                                String allPriceStr = scanner.nextLine().trim();
+
+                                if (!ProductHelper.validateUnitPrice(allPriceStr)) {
+                                    System.out.println(red +
+                                            "Invalid input! Please enter a valid number (e.g., 10 or 10.50)."
+                                            + reset);
+                                    continue;
+                                }
+
+                                double allPrice = Double.parseDouble(allPriceStr);
+                                if (allPrice <= 0) {
+                                    System.out.println(red +
+                                            "Invalid input! Unit price must be greater than 0."
+                                            + reset);
+                                    continue;
+                                }
+
+                                unitPrice = allPrice;
+                                break;
+                            }
+
+                            while (true) {
+                                System.out.print("Input Quantity : ");
+                                String allQtyStr = scanner.nextLine().trim();
+
+                                if (!ProductHelper.validateQuantity(allQtyStr)) {
+                                    System.out.println(red +
+                                            "Invalid input! Please enter a valid whole number."
+                                            + reset);
+                                    continue;
+                                }
+
+                                int allQty = Integer.parseInt(allQtyStr);
+                                if (allQty < 0) {
+                                    System.out.println(red +
+                                            "Invalid input! Quantity cannot be negative."
+                                            + reset);
+                                    continue;
+                                }
+
+                                quantity = allQty;
+                                break;
+                            }
+                            break;
+
+                        case "5":
+                            editing = false;
+                            break;
+
+                        default:
+                            System.out.println(red + "Invalid option! Please choose 1-5." + reset);
+                            break;
+                    }
+                }
+
+                Product updatedProduct = new Product(
+                        existingProduct.getId(),
+                        name,
+                        unitPrice,
+                        quantity,
+                        existingProduct.getImportedDate()
+                );
+
+                productController.updateProduct(updatedProduct);
+
+                System.out.println(green + "Product staged for update! Use Sa -> su to save to database." + reset);
+                displayProductTable(updatedProduct);
+                break;
+
+            } catch (NumberFormatException e) {
+                System.out.println(red + "Invalid input! Please enter valid numbers." + reset);
+            } catch (Exception e) {
+                System.out.println(red + "Error: " + e.getMessage() + reset);
             }
-
-            Product updatedProduct = new Product(
-                    existingProduct.getId(),
-                    name,
-                    unitPrice,
-                    quantity,
-                    existingProduct.getImportedDate()
-            );
-
-            productController.updateProduct(updatedProduct);
-
-            System.out.println(green + "Product staged for update! Use Sa -> su to save to database." + reset);
-            displayProductTable(updatedProduct);
-
-        } catch (NumberFormatException e) {
-            System.out.println(red + "Invalid input! Please enter valid numbers." + reset);
-        } catch (Exception e) {
-            System.out.println(red + "Error: " + e.getMessage() + reset);
         }
     }
 
@@ -756,45 +819,56 @@ public class View {
     }
 
     public void deleteProduct() {
-        try {
-            System.out.print(yellow + "Please input id to delete record : " + reset);
-            int id = Integer.parseInt(scanner.nextLine().trim());
+        while (true) {
+            try {
+                System.out.print(yellow + "Please input id to delete record : " + reset);
+                int id = Integer.parseInt(scanner.nextLine().trim());
 
-            List<Product> all = productController.displayAllProducts();
-            Product target = null;
-            for (Product p : all) {
-                if (p.getId() == id) {
-                    target = p;
-                    break;
+                List<Product> all = productController.displayAllProducts();
+                Product target = null;
+
+                for (Product p : all) {
+                    if (p.getId() == id) {
+                        target = p;
+                        break;
+                    }
                 }
-            }
 
-            if (target == null) {
-                System.out.println(red + "Product with ID " + id + " not found!" + reset);
+                if (target == null) {
+                    System.out.println(red + "Product with ID " + id + " not found!" + reset);
+                    continue;
+                }
+
+                displayProductTable(target);
+
+                while (true) {
+                    System.out.print(yellow + "Are you sure to delete product id : "
+                            + red + id + yellow + " ? (y/n) : " + reset);
+
+                    String confirm = scanner.nextLine().trim().toLowerCase();
+
+                    if (confirm.equals("y")) {
+                        String result = productController.deleteProduct(id);
+                        System.out.println(green + result + reset);
+                        break;
+                    } else if (confirm.equals("n")) {
+                        System.out.println(yellow + "Delete cancelled." + reset);
+                        break;
+                    } else {
+                        System.out.println(red + "Invalid input! Please enter y or n." + reset);
+                    }
+                }
+
                 System.out.print(yellow + "Enter to continue..." + reset);
                 scanner.nextLine();
-                return;
+
+                break;
+
+            } catch (NumberFormatException e) {
+                System.out.println(red + "Invalid input! Please enter a valid number." + reset);
+            } catch (Exception e) {
+                System.out.println(red + "Error: " + e.getMessage() + reset);
             }
-
-            displayProductTable(target);
-
-            System.out.print(yellow + "Are you sure to delete product id : " + red + id + yellow + " ? (y/n) : " + reset);
-            String confirm = scanner.nextLine().trim().toLowerCase();
-
-            if (confirm.equals("y")) {
-                String result = productController.deleteProduct(id);
-                System.out.println(green + result + reset);
-            } else {
-                System.out.println(yellow + "Delete cancelled." + reset);
-            }
-
-            System.out.print(yellow + "Enter to continue..." + reset);
-            scanner.nextLine();
-
-        } catch (NumberFormatException e) {
-            System.out.println(red + "Invalid input! Please enter a valid number." + reset);
-        } catch (Exception e) {
-            System.out.println(red + "Error: " + e.getMessage() + reset);
         }
     }
 }

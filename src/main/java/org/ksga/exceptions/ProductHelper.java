@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class ProductHelper {
     static Scanner scanner = new Scanner(System.in);
 
-    private static final String PRODUCT_NAME_REGEX = "^[A-Za-z][A-Za-z0-9]{1,249}$";
+    private static final String PRODUCT_NAME_REGEX = "^[A-Za-z][A-Za-z0-9 ]{1,249}$";
     private static final String UNIT_PRICE_REGEX = "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$";
     private static final String QUANTITY_REGEX = "^\\d+$";
 
@@ -44,7 +44,11 @@ public class ProductHelper {
             return false;
         }
 
-        int qty = Integer.parseInt(qtyProducts);
-        return qty >= 0;
+        try {
+            int qty = Integer.parseInt(qtyProducts);
+            return qty > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
